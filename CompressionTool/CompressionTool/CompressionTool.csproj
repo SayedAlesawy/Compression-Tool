@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HuffmanEncoder.cs" />
+    <Compile Include="HuffmanNode.cs" />
     <Compile Include="InputReader.cs" />
     <Compile Include="OutputWriter.cs" />
     <Compile Include="Probability.cs" />

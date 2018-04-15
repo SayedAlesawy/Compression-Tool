@@ -14,14 +14,17 @@ namespace CompressionTool
 
 
             InputReader InputReader = new InputReader(FileName);
-            OutputWriter OutputWriter = new OutputWriter(FileName);
+            //OutputWriter OutputWriter = new OutputWriter(FileName);
 
             string Text = InputReader.GetFileContent();
-            OutputWriter.WriteToFile(Text);
+            //OutputWriter.WriteToFile(Text);
 
             Probability Probability = new Probability(Text);
-            Dictionary<char, double> CharacterPropability = Probability.GetCharactersProbability();
+            Dictionary<char, int> CharactersCount = Probability.GetCharactersCount();
 
+            HuffmanEncoder HuffmanEncoder = new HuffmanEncoder();
+            HuffmanEncoder.Encode(CharactersCount, Text, FileName);
+ 
             Console.WriteLine("{0}", Text.Length);
         }
     }
