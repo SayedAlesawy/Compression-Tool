@@ -12,6 +12,7 @@ namespace CompressionTool
         {
             string FileName = "DataSet_1";
 
+            //string FileName = "test";
 
             InputReader InputReader = new InputReader(FileName);
             //OutputWriter OutputWriter = new OutputWriter(FileName);
@@ -24,8 +25,13 @@ namespace CompressionTool
 
             HuffmanEncoder HuffmanEncoder = new HuffmanEncoder();
             HuffmanEncoder.Encode(CharactersCount, Text, FileName);
- 
-            Console.WriteLine("{0}", Text.Length);
+
+            Console.WriteLine("Encoded {0} symbol", Text.Length);
+
+            HuffmanDecoder HuffmanDecoder = new HuffmanDecoder();
+            HuffmanDecoder.Decode(FileName);
+
+            Console.WriteLine("Decoded {0} symbol", Text.Length);
         }
     }
 }

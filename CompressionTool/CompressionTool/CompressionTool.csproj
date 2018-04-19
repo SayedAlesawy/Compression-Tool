@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HuffmanDecoder.cs" />
     <Compile Include="HuffmanEncoder.cs" />
     <Compile Include="HuffmanNode.cs" />
     <Compile Include="InputReader.cs" />

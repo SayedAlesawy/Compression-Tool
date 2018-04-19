@@ -20,10 +20,9 @@ namespace CompressionTool
         {
             string FilePath = @"G:\Compression-Tool\CompressionTool\CompressionTool\EncodedOutput\" + m_FileName + ".txt";
 
-            FileStream OutputFile = new FileStream(FilePath, FileMode.Create);
-
-            for (int i = 0; i < EncodedStream.Count; i++)
-                OutputFile.WriteByte(EncodedStream[i]);
+            byte[] CompressedData = EncodedStream.ToArray();
+            
+            File.WriteAllBytes(FilePath, CompressedData);
         }
     }
 }
