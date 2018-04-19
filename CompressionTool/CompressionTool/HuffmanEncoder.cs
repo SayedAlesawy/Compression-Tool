@@ -80,9 +80,17 @@ namespace CompressionTool
                 }
                 else
                 {
-                    long next = Convert.ToInt64(code, 2); next++;
+                    int PreSize = code.Length;
 
+                    long next = Convert.ToInt64(code, 2); next++;
+                    
                     code = Convert.ToString(next, 2);
+
+                    int LeftPadding = PreSize - code.Length; string Padding = "";
+
+                    for (int p = 0; p < LeftPadding; p++) Padding += '0';
+
+                    code = Padding + code;
 
                     int cnt = entry.Value.Length - code.Length;
 
@@ -201,6 +209,14 @@ namespace CompressionTool
             BuildHeader();
 
             OutputEncodedFile(Text, FileName);
+
+            /*
+            foreach(KeyValuePair<char, string> entry in m_CanonicalEncodingDictionary)
+            {
+                Console.WriteLine(entry.Value);
+            }
+            */
+            
         }
     }
 }

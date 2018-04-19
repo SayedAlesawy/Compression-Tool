@@ -10,6 +10,9 @@ namespace CompressionTool
     {
         static void Main(string[] args)
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            // the code that you want to measure comes here
+
             string FileName = "DataSet_1";
 
             //string FileName = "test";
@@ -32,6 +35,12 @@ namespace CompressionTool
             HuffmanDecoder.Decode(FileName);
 
             Console.WriteLine("Decoded {0} symbol", Text.Length);
+
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            double lol = (double)elapsedMs / 1000.0;
+            lol /= 60;
+            Console.WriteLine("{0} mins", lol);
         }
     }
 }

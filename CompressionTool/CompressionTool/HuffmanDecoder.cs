@@ -109,9 +109,18 @@ namespace CompressionTool
                     {
                         int rem = len - code.Length;
                         for (int j = 0; j < rem; j++) code += '0';
+
                         m_DecodingDictionary.Add(code, Symbols[i]);
+
+                        int PreSize = code.Length;
                         next = Convert.ToInt64(code, 2) + 1;
                         code = Convert.ToString(next, 2);
+
+                        int LeftPadding = PreSize - code.Length; string Padding = "";
+
+                        for (int p = 0; p < LeftPadding; p++) Padding += '0';
+
+                        code = Padding + code;
                     }
                 }
             }
@@ -119,16 +128,19 @@ namespace CompressionTool
 
         private string DecodePartialText(string PartialText)
         {
+            Console.WriteLine("Called");
             string Partial = ""; int LastIndex = 0;
 
             for(int i = 0; i < PartialText.Length; i++)
             {
+                char c = PartialText[i];
+
                 Partial += PartialText[i];
 
                 if (m_DecodingDictionary.ContainsKey(Partial))
                 {
                     m_DecodedText += m_DecodingDictionary[Partial];
-                    LastIndex = i;
+                    LastIndex = i + 1;
                     Partial = "";
                 }
             }
@@ -138,7 +150,7 @@ namespace CompressionTool
 
         private void DecodeText()
         {
-            string ToBeDecoded = "";
+            string ToBeDecoded = ""; 
 
             for (int i = m_InverseAlphabet.Count+1; i < m_CompressedData.Length - 1; i++)
             {
@@ -162,7 +174,12 @@ namespace CompressionTool
                 ToBeDecoded = DecodePartialText(ToBeDecoded);
             }
 
-            string tmp = Convert.ToString(m_CompressedData[m_CompressedData.Length - 1]);
+            string tmp = Convert.ToString(m_CompressedData[m_CompressedData.Length - 1], 2);
+            int TmpLeftPadding = 8 - tmp.Length; string TmpPadding = "";
+
+            for (int p = 0; p < TmpLeftPadding; p++) TmpPadding += '0';
+            tmp = TmpPadding + tmp;
+
             string LastByte = tmp.Substring(0, tmp.Length - m_BytePadding);
             ToBeDecoded += LastByte;
 
@@ -198,6 +215,13 @@ namespace CompressionTool
             DecodeText();
 
             ProduceDecompressedFile(FileName);
+
+            /*
+            foreach (KeyValuePair<string, char> entry in m_DecodingDictionary)
+            {
+                Console.WriteLine(entry.Key);
+            }
+            */
         }
     }
 }
