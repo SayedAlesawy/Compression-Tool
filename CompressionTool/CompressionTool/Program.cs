@@ -10,37 +10,43 @@ namespace CompressionTool
     {
         static void Main(string[] args)
         {
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            // the code that you want to measure comes here
+            double TotalTime = 0.0;
 
-            string FileName = "DataSet_1";
+            for (int file = 1; file <= 20; file++)
+            {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            //string FileName = "test";
+                string FileName = "DataSet_" + file.ToString();
 
-            InputReader InputReader = new InputReader(FileName);
-            //OutputWriter OutputWriter = new OutputWriter(FileName);
+                InputReader InputReader = new InputReader(FileName);
+                string Text = InputReader.GetFileContent();
 
-            string Text = InputReader.GetFileContent();
-            //OutputWriter.WriteToFile(Text);
+                Probability Probability = new Probability(Text);
+                Dictionary<char, int> CharactersCount = Probability.GetCharactersCount();
 
-            Probability Probability = new Probability(Text);
-            Dictionary<char, int> CharactersCount = Probability.GetCharactersCount();
+                HuffmanEncoder HuffmanEncoder = new HuffmanEncoder();
+                HuffmanEncoder.Encode(CharactersCount, Text, FileName);
 
-            HuffmanEncoder HuffmanEncoder = new HuffmanEncoder();
-            HuffmanEncoder.Encode(CharactersCount, Text, FileName);
+                Console.WriteLine("Encoded {0} symbol", Text.Length);
 
-            Console.WriteLine("Encoded {0} symbol", Text.Length);
+                HuffmanDecoder HuffmanDecoder = new HuffmanDecoder();
+                HuffmanDecoder.Decode(FileName);
 
-            HuffmanDecoder HuffmanDecoder = new HuffmanDecoder();
-            HuffmanDecoder.Decode(FileName);
+                Console.WriteLine("\nDecoded {0} symbol", Text.Length);
 
-            Console.WriteLine("Decoded {0} symbol", Text.Length);
+                Console.Write("File number {0} finished in ", file);
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                double Secs = (double)elapsedMs / 1000.0;
+                Console.WriteLine("{0} secs", Secs);
 
-            watch.Stop();
-            var elapsedMs = watch.ElapsedMilliseconds;
-            double lol = (double)elapsedMs / 1000.0;
-            lol /= 60;
-            Console.WriteLine("{0} mins", lol);
+                TotalTime += Secs;
+
+                Console.WriteLine("=====================================================");
+                Console.WriteLine("=====================================================");
+            }
+
+            Console.WriteLine("Compression/decompression of all 20 files done in {0} secs", TotalTime);
         }
     }
 }

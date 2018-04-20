@@ -209,14 +209,6 @@ namespace CompressionTool
             BuildHeader();
 
             OutputEncodedFile(Text, FileName);
-
-            /*
-            foreach(KeyValuePair<char, string> entry in m_CanonicalEncodingDictionary)
-            {
-                Console.WriteLine(entry.Value);
-            }
-            */
-            
         }
     }
 }

@@ -18,7 +18,7 @@ namespace CompressionTool
 
         public void WriteToFile(List<byte> EncodedStream)
         {
-            string FilePath = @"G:\Compression-Tool\CompressionTool\CompressionTool\EncodedOutput\" + m_FileName + ".txt";
+            string FilePath = @"G:\Compression-Tool\CompressionTool\CompressionTool\EncodedOutput\" + m_FileName + ".tsv";
 
             byte[] CompressedData = EncodedStream.ToArray();
             
