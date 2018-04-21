@@ -12,7 +12,7 @@ namespace CompressionTool
         private string m_FileContent;
 
         private void ReadFile()
-        {
+        { 
             string FilePath = @"..\..\Dataset\" + m_FileName + ".tsv";
 
             m_FileContent = System.IO.File.ReadAllText(FilePath);
