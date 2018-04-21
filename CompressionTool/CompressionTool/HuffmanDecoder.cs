@@ -13,7 +13,7 @@ namespace CompressionTool
         private Dictionary<char, int> m_Alphabet;
         private Dictionary<int, char> m_InverseAlphabet;
         private Dictionary<byte, int> m_LengthSymbolCount;
-        private Dictionary<byte, List<char>> m_SymbolsPerLength;
+        private Dictionary<byte, List<byte>> m_SymbolsPerLength;
         private byte[] m_CompressedData;
         private byte m_BytePadding;
         private byte m_MaxCodewordLength;
@@ -23,7 +23,7 @@ namespace CompressionTool
         {
             int id = 0;
 
-            String Text = System.IO.File.ReadAllText(@"G:\Compression-Tool\CompressionTool\CompressionTool\SymbolDictionary.txt", Encoding.UTF8);
+            string Text = System.IO.File.ReadAllText(@"..\..\SymbolDictionary.txt", Encoding.UTF8);
 
             for (int i = 0; i < Text.Length; i++)
             {
@@ -47,7 +47,7 @@ namespace CompressionTool
 
         private void ReadCompressedFile(string FileName)
         {
-            string FilePath = @"G:\Compression-Tool\CompressionTool\CompressionTool\EncodedOutput\" + FileName + ".tsv";
+            string FilePath = @"..\..\EncodedOutput\" + FileName + ".tsv";
 
             m_CompressedData = File.ReadAllBytes(FilePath);
 
@@ -79,12 +79,12 @@ namespace CompressionTool
             {
                 if (m_SymbolsPerLength.ContainsKey(m_CompressedData[i]))
                 {
-                    m_SymbolsPerLength[m_CompressedData[i]].Add(m_InverseAlphabet[i]);
+                    m_SymbolsPerLength[m_CompressedData[i]].Add((byte)i);
                 }
                 else
                 {
-                    List<char> tmp = new List<char>();
-                    tmp.Add(m_InverseAlphabet[i]);
+                    List<byte> tmp = new List<byte>();
+                    tmp.Add((byte)i);
                     m_SymbolsPerLength.Add(m_CompressedData[i], tmp);
                 }
             }
@@ -102,7 +102,7 @@ namespace CompressionTool
             {
                 if (m_SymbolsPerLength.ContainsKey(len))
                 {
-                    List<char> Symbols = m_SymbolsPerLength[len];
+                    List<byte> Symbols = m_SymbolsPerLength[len];
                     Symbols.Sort();
 
                     for (int i = 0; i < Symbols.Count; i++)
@@ -110,7 +110,7 @@ namespace CompressionTool
                         int rem = len - code.Length;
                         for (int j = 0; j < rem; j++) code += '0';
 
-                        m_DecodingDictionary.Add(code, Symbols[i]);
+                        m_DecodingDictionary.Add(code, m_InverseAlphabet[Symbols[i]]);
 
                         int PreSize = code.Length;
                         next = Convert.ToInt64(code, 2) + 1;
@@ -151,7 +151,7 @@ namespace CompressionTool
 
         private void DecodeText()
         {
-            string ToBeDecoded = ""; 
+            String ToBeDecoded = ""; 
 
             for (int i = m_InverseAlphabet.Count+1; i < m_CompressedData.Length - 1; i++)
             {
@@ -189,7 +189,7 @@ namespace CompressionTool
 
         private void ProduceDecompressedFile(string FileName)
         {
-            string FilePath = @"G:\Compression-Tool\CompressionTool\CompressionTool\DecompressedFiles\" + FileName + ".tsv";
+            string FilePath = @"..\..\DecompressedFiles\" + FileName + ".tsv";
 
             System.IO.File.WriteAllText(FilePath, m_DecodedText.ToString(), Encoding.UTF8);
         }
@@ -200,7 +200,7 @@ namespace CompressionTool
             m_InverseAlphabet = new Dictionary<int, char>();
             m_Alphabet = new Dictionary<char, int>();
             m_LengthSymbolCount = new Dictionary<byte, int>();
-            m_SymbolsPerLength = new Dictionary<byte, List<char>>();
+            m_SymbolsPerLength = new Dictionary<byte, List<byte>>();
             m_DecodedText = new StringBuilder();
             m_BytePadding = 0;
             m_MaxCodewordLength = 1;

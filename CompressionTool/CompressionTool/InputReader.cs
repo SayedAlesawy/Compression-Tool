@@ -13,8 +13,7 @@ namespace CompressionTool
 
         private void ReadFile()
         {
-            //To be changed to relative path
-            string FilePath = @"G:\Compression-Tool\CompressionTool\CompressionTool\Dataset\" + m_FileName + ".tsv";
+            string FilePath = @"..\..\Dataset\" + m_FileName + ".tsv";
 
             m_FileContent = System.IO.File.ReadAllText(FilePath);
         }

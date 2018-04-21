@@ -9,19 +9,20 @@ namespace CompressionTool
 {
     class HuffmanEncoder
     {
-        private Dictionary<char, int> m_CharactersCount;
+        private Dictionary<byte, int> m_CharactersCount;
         private List<HuffmanNode> m_HuffmanNodes;
-        private Dictionary<char, string> m_EncodingDictionary;
-        private Dictionary<char, string> m_CanonicalEncodingDictionary;
-        private Dictionary<char, int> m_Alphabet;
+        private Dictionary<byte, string> m_EncodingDictionary;
+        private Dictionary<byte, string> m_CanonicalEncodingDictionary;
         private List<byte> m_EncodedStream;
+        private List<byte> m_InputStream;
+        private int m_HeaderSize;
         private byte m_BytePadding;
 
         private void GetHuffmanNodes()
         {
-            foreach (KeyValuePair<char, int> entry in m_CharactersCount)
+            foreach (KeyValuePair<byte, int> entry in m_CharactersCount)
             {
-                m_HuffmanNodes.Add(new HuffmanNode(entry.Key.ToString(), entry.Value));
+                m_HuffmanNodes.Add(new HuffmanNode(entry.Key, entry.Value));
             }
 
             m_HuffmanNodes.Sort();
@@ -50,7 +51,7 @@ namespace CompressionTool
             if (Node.LeftChild == null && Node.RightChild == null)
             {
                 Node.Code = Code;
-                m_EncodingDictionary.Add(Node.Character[0], Node.Code);
+                m_EncodingDictionary.Add(Node.Character, Node.Code);
                 return;
             }
 
@@ -60,15 +61,15 @@ namespace CompressionTool
 
         private void GetCanonicalCodes()
         {
-            IOrderedEnumerable<KeyValuePair<char, string>> sortedCollection = 
+            IOrderedEnumerable<KeyValuePair<byte, string>> sortedCollection = 
                 m_EncodingDictionary.OrderBy(x => x.Value.Length).ThenBy(x => x.Key);
 
-            Dictionary<char, string> Temp = new Dictionary<char, string>();
+            Dictionary<byte, string> Temp = new Dictionary<byte, string>();
 
             Temp = sortedCollection.ToDictionary(pair => pair.Key, pair => pair.Value);
 
             string code = ""; bool f = true;
-            foreach(KeyValuePair<char, string> entry in Temp)
+            foreach(KeyValuePair<byte, string> entry in Temp)
             {
                 if (f)
                 {
@@ -101,14 +102,14 @@ namespace CompressionTool
             }
         }
 
-        private void GetEncodedOutput(string Text)
+        private void GetEncodedOutput()
         {
             string EncodedText = "";
 
-            for (int i = 0; i < Text.Length; i++)
+            for (int i = 0; i < m_InputStream.Count; i++)
             {
-                char c = Text[i];
-                EncodedText += m_CanonicalEncodingDictionary[Text[i]];
+                byte b = m_InputStream[i];
+                EncodedText += m_CanonicalEncodingDictionary[m_InputStream[i]];
                 EncodedText = ToBinary(EncodedText);
             }
 
@@ -122,7 +123,7 @@ namespace CompressionTool
                 ToBinary(EncodedText);
             }
 
-            m_EncodedStream.Insert(m_Alphabet.Count, m_BytePadding);
+            m_EncodedStream.Insert(m_HeaderSize, m_BytePadding);
         }
 
         private string ToBinary(string EncodedText)
@@ -140,9 +141,9 @@ namespace CompressionTool
             return EncodedText.Substring(StartIndex, EncodedText.Length - 8 * ByteCount);
         }
 
-        private void OutputEncodedFile(string Text, string FileName)
+        private void OutputEncodedFile(string FileName)
         {
-            GetEncodedOutput(Text);
+            GetEncodedOutput();
 
             OutputWriter OutputWriter = new OutputWriter(FileName);
             OutputWriter.WriteToFile(m_EncodedStream);
@@ -151,11 +152,11 @@ namespace CompressionTool
        
         private void BuildHeader()
         {
-            foreach(KeyValuePair<char, int> entry in m_Alphabet)
+            for (byte i = 0; i < m_HeaderSize; i++) 
             {
-                if (m_CanonicalEncodingDictionary.ContainsKey(entry.Key))
+                if (m_CanonicalEncodingDictionary.ContainsKey(i))
                 {
-                    byte CodeLength = (byte) m_CanonicalEncodingDictionary[entry.Key].Length;
+                    byte CodeLength = (byte) m_CanonicalEncodingDictionary[i].Length;
                     m_EncodedStream.Add(CodeLength);
                 }
                 else
@@ -165,36 +166,21 @@ namespace CompressionTool
             }
         }
 
-        private void LoadSymbolDictionary()
-        {
-            int id = 0;
-
-            String Text = System.IO.File.ReadAllText(@"G:\Compression-Tool\CompressionTool\CompressionTool\SymbolDictionary.txt", Encoding.UTF8);
-
-            for (int i = 0; i < Text.Length; i++)
-            {
-                if (m_Alphabet.ContainsKey(Text[i]))
-                    continue;
-
-                m_Alphabet.Add(Text[i], id);
-                id++;
-            }
-        }
-
         public HuffmanEncoder()
         {
-            m_CharactersCount = new Dictionary<char, int>();
+            m_CharactersCount = new Dictionary<byte, int>();
             m_HuffmanNodes = new List<HuffmanNode>();
-            m_EncodingDictionary = new Dictionary<char, string>();
-            m_CanonicalEncodingDictionary = new Dictionary<char, string>();
-            m_Alphabet = new Dictionary<char, int>();
+            m_EncodingDictionary = new Dictionary<byte, string>();
+            m_CanonicalEncodingDictionary = new Dictionary<byte, string>();
+            m_InputStream = new List<byte>();
             m_EncodedStream = new List<byte>();
             m_BytePadding = 0;
+            m_HeaderSize = 180;
         }
 
-        public void Encode(Dictionary<char, int> CharactersCount, string Text, string FileName)
+        public void Encode(Dictionary<byte, int> CharactersCount, List<byte> InputStream, string FileName)
         {
-            LoadSymbolDictionary();
+            m_InputStream = InputStream;
 
             m_CharactersCount = CharactersCount;
 
@@ -208,7 +194,7 @@ namespace CompressionTool
 
             BuildHeader();
 
-            OutputEncodedFile(Text, FileName);
+            OutputEncodedFile(FileName);
         }
     }
 }

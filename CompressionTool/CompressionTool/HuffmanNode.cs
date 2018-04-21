@@ -8,7 +8,7 @@ namespace CompressionTool
 {
     class HuffmanNode : IComparable<HuffmanNode>
     {
-        public string Character;
+        public byte Character;
         public string Code;
         public int Frequency;
         public bool IsLeaf;
@@ -16,7 +16,7 @@ namespace CompressionTool
         public HuffmanNode LeftChild;
         public HuffmanNode RightChild;
 
-        public HuffmanNode(string Symbol, int FreqeuncyVal)
+        public HuffmanNode(byte Symbol, int FreqeuncyVal)
         {
             Character = Symbol;
             Code = "";
@@ -36,7 +36,7 @@ namespace CompressionTool
                 RightChild = FirstNode;
                 LeftChild  = SecondNode;
                 LeftChild.Parent = RightChild.Parent = this;
-                Character = FirstNode.Character + SecondNode.Character;
+                Character = 200;
                 Frequency = FirstNode.Frequency + RightChild.Frequency;
             }
             else
@@ -44,7 +44,7 @@ namespace CompressionTool
                 RightChild = SecondNode;
                 LeftChild = FirstNode;
                 LeftChild.Parent = RightChild.Parent = this;
-                Character = SecondNode.Character + FirstNode.Character;
+                Character = 200;
                 Frequency = FirstNode.Frequency + RightChild.Frequency;
             }
         }

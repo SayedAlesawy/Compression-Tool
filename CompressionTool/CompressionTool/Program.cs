@@ -18,21 +18,21 @@ namespace CompressionTool
 
                 string FileName = "DataSet_" + file.ToString();
 
-                InputReader InputReader = new InputReader(FileName);
-                string Text = InputReader.GetFileContent();
+                TextToByteConverter TextToByteConverter = new TextToByteConverter(FileName);
+                List<byte> InputStream = TextToByteConverter.Convert();
 
-                Probability Probability = new Probability(Text);
-                Dictionary<char, int> CharactersCount = Probability.GetCharactersCount();
+                Probability Probability = new Probability(InputStream);
+                Dictionary<byte, int> CharactersCount = Probability.GetCharactersCount();
 
                 HuffmanEncoder HuffmanEncoder = new HuffmanEncoder();
-                HuffmanEncoder.Encode(CharactersCount, Text, FileName);
+                HuffmanEncoder.Encode(CharactersCount, InputStream, FileName);
 
-                Console.WriteLine("Encoded {0} symbol", Text.Length);
+                Console.WriteLine("Encoded {0} bytes", InputStream.Count);
 
                 HuffmanDecoder HuffmanDecoder = new HuffmanDecoder();
                 HuffmanDecoder.Decode(FileName);
 
-                Console.WriteLine("\nDecoded {0} symbol", Text.Length);
+                Console.WriteLine("\nDecoded {0} bytes", InputStream.Count);
 
                 Console.Write("File number {0} finished in ", file);
                 watch.Stop();
@@ -46,7 +46,7 @@ namespace CompressionTool
                 Console.WriteLine("=====================================================");
             }
 
-            Console.WriteLine("Compression/decompression of all 20 files done in {0} secs", TotalTime);
+            Console.WriteLine("Compression/decompression of all 20 files done in {0} mins", TotalTime/60.0);
         }
     }
 }

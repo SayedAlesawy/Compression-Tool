@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CompressionTool
 {
     class Probability
     {
-        private string m_Text;
-        private int m_SymbolCount;
-        private Dictionary<char, int> m_CharactersDictionary;
-        private Dictionary<char, double> m_CharactersProbability;
-
+        private List<byte> m_Text;
+        private Dictionary<byte, int> m_CharactersDictionary;
+       
         private void CountCharacters()
         {
-            for(int i = 0; i < m_Text.Length; i++)
+            for(int i = 0; i < m_Text.Count; i++)
             {
                 if (m_CharactersDictionary.ContainsKey(m_Text[i]))
                 {
@@ -26,41 +20,19 @@ namespace CompressionTool
                     m_CharactersDictionary.Add(m_Text[i], 1);
                 }
             }
-
-            m_SymbolCount = m_CharactersDictionary.Count;
         }
 
-        private void CalculateProbability()
-        {
-            foreach (KeyValuePair<char, int> entry in m_CharactersDictionary)
-            {
-                double probability = (double)entry.Value / (double)m_Text.Length;
-
-                m_CharactersProbability.Add(entry.Key, probability);
-            }
-        }
-
-        public Probability(string Text)
+        public Probability(List<byte> Text)
         {
             m_Text = Text;
-            m_CharactersDictionary = new Dictionary<char, int>();
-            m_CharactersProbability = new Dictionary<char, double>();
+            m_CharactersDictionary = new Dictionary<byte, int>();
         }
 
-        public Dictionary<char,int> GetCharactersCount()
+        public Dictionary<byte,int> GetCharactersCount()
         {
             CountCharacters();
 
             return m_CharactersDictionary;
-        }
-
-        public Dictionary<char, double> GetCharactersProbability()
-        {
-            CountCharacters();
-
-            CalculateProbability();
-
-            return m_CharactersProbability;
         }
     }
 }
