@@ -23,7 +23,7 @@ namespace CompressionTool
         {
             int id = 0;
 
-            String Text = System.IO.File.ReadAllText(@"G:\Compression-Tool\CompressionTool\CompressionTool\SymbolDictionary.txt", Encoding.UTF8);
+            String Text = System.IO.File.ReadAllText(@"..\..\SymbolDictionary.txt", Encoding.UTF8);
 
             for (int i = 0; i < Text.Length; i++)
             {
@@ -47,7 +47,7 @@ namespace CompressionTool
 
         private void ReadCompressedFile(string FileName)
         {
-            string FilePath = @"G:\Compression-Tool\CompressionTool\CompressionTool\EncodedOutput\" + FileName + ".tsv";
+            string FilePath = @"..\..\EncodedOutput\" + FileName + ".tsv";
 
             m_CompressedData = File.ReadAllBytes(FilePath);
 
@@ -189,7 +189,7 @@ namespace CompressionTool
 
         private void ProduceDecompressedFile(string FileName)
         {
-            string FilePath = @"G:\Compression-Tool\CompressionTool\CompressionTool\DecompressedFiles\" + FileName + ".tsv";
+            string FilePath = @"..\..\DecompressedFiles\" + FileName + ".tsv";
 
             System.IO.File.WriteAllText(FilePath, m_DecodedText.ToString(), Encoding.UTF8);
         }

@@ -169,7 +169,7 @@ namespace CompressionTool
         {
             int id = 0;
 
-            String Text = System.IO.File.ReadAllText(@"G:\Compression-Tool\CompressionTool\CompressionTool\SymbolDictionary.txt", Encoding.UTF8);
+            String Text = System.IO.File.ReadAllText(@"..\..\SymbolDictionary.txt", Encoding.UTF8);
 
             for (int i = 0; i < Text.Length; i++)
             {
