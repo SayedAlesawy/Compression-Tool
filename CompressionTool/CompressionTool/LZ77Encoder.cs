@@ -31,6 +31,9 @@ namespace CompressionTool
         private int m_MinMatchLength;
         private int m_MinBackwardDistance;
         private byte m_BytePadding;
+        private int m_LiteralCodewordLength;
+        private int m_BackwardDistanceCodewordLength;
+        private int m_MatchLengthCodewordLength;
 
         private void PopulateLookAheadBuffer()
         {
@@ -114,7 +117,7 @@ namespace CompressionTool
         {
             string len = Convert.ToString(Length, 2);
 
-            len = len.PadLeft(8, '0');
+            len = len.PadLeft(m_MatchLengthCodewordLength, '0');
 
             m_CompressedOutput += len;
         }
@@ -123,7 +126,7 @@ namespace CompressionTool
         {
             string dist = Convert.ToString(BackwardDistance, 2);
 
-            dist = dist.PadLeft(15, '0');
+            dist = dist.PadLeft(m_BackwardDistanceCodewordLength, '0');
 
             m_CompressedOutput += dist;
         }
@@ -132,7 +135,7 @@ namespace CompressionTool
         {
             string lit = Convert.ToString(Literal, 2);
 
-            lit = lit.PadLeft(8, '0');
+            lit = lit.PadLeft(m_LiteralCodewordLength, '0');
 
             m_CompressedOutput += lit;
         }
@@ -222,6 +225,9 @@ namespace CompressionTool
             m_MinMatchLength = 3;
             m_MinBackwardDistance = 1;
             m_BytePadding = 0;
+            m_LiteralCodewordLength = 8;
+            m_BackwardDistanceCodewordLength = 15; 
+            m_MatchLengthCodewordLength = 8;
         }
 
         public void Encode(List<byte> InputStream, string FileName)
