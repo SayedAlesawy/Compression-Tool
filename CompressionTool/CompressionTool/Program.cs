@@ -12,7 +12,7 @@ namespace CompressionTool
         {
             double TotalTime = 0.0;
 
-            for (int file = 1; file <= 20; file++)
+            for (int file = 20; file <= 20; file++)
             {
                 var watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -20,6 +20,18 @@ namespace CompressionTool
 
                 TextToByteConverter TextToByteConverter = new TextToByteConverter(FileName);
                 List<byte> InputStream = TextToByteConverter.Convert();
+
+                LZ77Encoder LZ77Encoder = new LZ77Encoder(258, 32 * 1024);
+                LZ77Encoder.Encode(InputStream, FileName);
+
+                LZ77Decoder LZ77Decoder = new LZ77Decoder(32 * 1024);
+                LZ77Decoder.Decode(FileName);
+
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                double Secs = (double)elapsedMs / 1000.0;
+                Console.WriteLine("{0} secs", Secs);
+                /*
 
                 Probability Probability = new Probability(InputStream);
                 Dictionary<byte, int> CharactersCount = Probability.GetCharactersCount();
@@ -44,9 +56,10 @@ namespace CompressionTool
 
                 Console.WriteLine("=====================================================");
                 Console.WriteLine("=====================================================");
+                */
             }
 
-            Console.WriteLine("Compression/decompression of all 20 files done in {0} mins", TotalTime/60.0);
+            //Console.WriteLine("Compression/decompression of all 20 files done in {0} mins", TotalTime/60.0);
         }
     }
 }

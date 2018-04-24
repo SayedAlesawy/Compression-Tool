@@ -47,6 +47,7 @@
     <Compile Include="HuffmanEncoder.cs" />
     <Compile Include="HuffmanNode.cs" />
     <Compile Include="InputReader.cs" />
+    <Compile Include="LZ77Decoder.cs" />
     <Compile Include="LZ77Encoder.cs" />
     <Compile Include="OutputWriter.cs" />
     <Compile Include="Probability.cs" />
