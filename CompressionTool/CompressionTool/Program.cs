@@ -60,7 +60,7 @@ namespace CompressionTool
         {
             int FileCount = 0;
 
-            for (int file = 16; file <= 17; file++)
+            for (int file = 6; file <= 6; file++)
             {
                 string FileName = "DataSet_" + file.ToString();
 
