@@ -17,49 +17,38 @@ namespace CompressionTool
         private List<byte> m_MatchLengthsHeader;
         private List<byte> m_BackwardDistancesHeader;
         private List<byte> m_OutputStream;
-        private int m_BufferingSize;
         private int m_InputStreamIndex;
         private string m_TextBuffer;
-        private int m_LiteralsHeaderSize;
-        private int m_MatchLengthsHeaderSize;
-        private int m_BackwardDistanceHeaderSize;
         private byte m_MetaBytePadding;
         private byte m_InputBytePadding;
-        private int CodeUnkown;
-        private int CodeDistance;
-        private int CodeLength;
-        private int CodeLiteral;
-        private char Uncompressed;
-
+        
         private void ReadCompressedFile(string FileName)
         {
-            string FilePath = @"..\..\EncodedOutput\" + FileName + ".tsv";
+            InputReader InputReader = new InputReader();
 
-            byte[] temp = File.ReadAllBytes(FilePath);
-
-            m_InputStream = temp.ToList<byte>();
+            m_InputStream = InputReader.ReadFinalEncodedFile(FileName);
         }
 
         private void ExtractHeaders()
         {
-            for (int i = 0; i < m_LiteralsHeaderSize; i++)
+            for (int i = 0; i < Constants.LiteralsHeaderSize; i++)
             {
                 m_LiteralsHeader.Add(m_InputStream[i]);
             }
 
-            for (int i = m_LiteralsHeaderSize; i < m_LiteralsHeaderSize + m_MatchLengthsHeaderSize; i++)
+            for (int i = Constants.LiteralsHeaderSize; i < Constants.LiteralsHeaderSize + Constants.MatchLengthsHeaderSize; i++)
             {
                 m_MatchLengthsHeader.Add(m_InputStream[i]);
             }
 
-            for (int i = m_LiteralsHeaderSize + m_MatchLengthsHeaderSize; i < m_LiteralsHeaderSize + m_MatchLengthsHeaderSize + m_BackwardDistanceHeaderSize; i++)
+            for (int i = Constants.LiteralsHeaderSize + Constants.MatchLengthsHeaderSize; i < Constants.LiteralsHeaderSize + Constants.MatchLengthsHeaderSize + Constants.BackwardDistanceHeaderSize; i++)
             {
                 m_BackwardDistancesHeader.Add(m_InputStream[i]);
             }
 
-            m_InputBytePadding = m_InputStream[m_LiteralsHeaderSize + m_MatchLengthsHeaderSize + m_BackwardDistanceHeaderSize];
+            m_InputBytePadding = m_InputStream[Constants.LiteralsHeaderSize + Constants.MatchLengthsHeaderSize + Constants.BackwardDistanceHeaderSize];
 
-            m_InputStream.RemoveRange(0, m_LiteralsHeaderSize + m_MatchLengthsHeaderSize + m_BackwardDistanceHeaderSize + 1);
+            m_InputStream.RemoveRange(0, Constants.LiteralsHeaderSize + Constants.MatchLengthsHeaderSize + Constants.BackwardDistanceHeaderSize + Constants.BytePaddingSize);
         }
 
         private void BuildCodeBooks()
@@ -76,12 +65,11 @@ namespace CompressionTool
 
         private char GetFlagBit()
         {
-            if (m_TextBuffer.Length < 1)
-                BufferText();
+            BufferText();
 
             char FlagBit = m_TextBuffer[0];
 
-            m_TextBuffer = m_TextBuffer.Remove(0, 1);
+            m_TextBuffer = m_TextBuffer.Remove(0, Constants.Bit);
 
             return FlagBit;
         }
@@ -98,9 +86,12 @@ namespace CompressionTool
 
                 if (m_LiteralsCodeBook.ContainsKey(Partial))
                 {
-                    string tmp = Convert.ToString(m_LiteralsCodeBook[Partial], 2);
-                    DecodedLiteral = tmp.PadLeft(8, '0');
+                    string CodeWord = Convert.ToString(m_LiteralsCodeBook[Partial], 2);
+
+                    DecodedLiteral = CodeWord.PadLeft(Constants.Byte, '0');
+
                     m_TextBuffer = m_TextBuffer.Remove(0, i + 1);
+
                     break;
                 }
             }
@@ -120,9 +111,12 @@ namespace CompressionTool
 
                 if (m_MatchLengthsCodeBook.ContainsKey(Partial))
                 {
-                    string tmp = Convert.ToString(m_MatchLengthsCodeBook[Partial], 2);
-                    DecodedMatchLength = tmp.PadLeft(8, '0');
+                    string CodeWord = Convert.ToString(m_MatchLengthsCodeBook[Partial], 2);
+
+                    DecodedMatchLength = CodeWord.PadLeft(Constants.Byte, '0');
+
                     m_TextBuffer = m_TextBuffer.Remove(0, i + 1);
+
                     break;
                 }
             }
@@ -142,11 +136,16 @@ namespace CompressionTool
 
                 if (m_BackwardDistancesCodeBook.ContainsKey(Partial))
                 {
-                    string tmp = Convert.ToString(m_BackwardDistancesCodeBook[Partial], 2);
-                    DecodedBackwardDistance = tmp.PadLeft(8, '0');
+                    string CodeWord = Convert.ToString(m_BackwardDistancesCodeBook[Partial], 2);
+
+                    DecodedBackwardDistance = CodeWord.PadLeft(Constants.Byte, '0');
+
                     m_TextBuffer = m_TextBuffer.Remove(0, i + 1);
-                    DecodedBackwardDistance += m_TextBuffer.Substring(0, 7);
-                    m_TextBuffer = m_TextBuffer.Remove(0, 7);
+
+                    DecodedBackwardDistance += m_TextBuffer.Substring(0, Constants.BackwardDistanceCodewordLength - Constants.Byte);
+
+                    m_TextBuffer = m_TextBuffer.Remove(0, Constants.BackwardDistanceCodewordLength - Constants.Byte);
+
                     break;
                 }
             }
@@ -156,38 +155,40 @@ namespace CompressionTool
 
         private void TrimPadding()
         {
-            string tmp = Convert.ToString(m_InputStream[m_InputStream.Count - 1], 2);
+            string PaddedByte = Convert.ToString(m_InputStream[m_InputStream.Count - 1], 2);
 
             m_InputStreamIndex++;
 
-            tmp = tmp.PadLeft(8, '0');
+            PaddedByte = PaddedByte.PadLeft(Constants.Byte, '0');
 
-            string LastByte = tmp.Substring(0, tmp.Length - m_InputBytePadding);
+            string LastByte = PaddedByte.Substring(0, PaddedByte.Length - m_InputBytePadding);
 
             m_TextBuffer += LastByte;
         }
 
         private void BufferText()
         {
-            if (m_TextBuffer.Length >= m_BufferingSize) return;
+            if (m_TextBuffer.Length >= Constants.BufferingSize) return;
 
             String ToBeDecoded = "";
 
-            for (int i = m_InputStreamIndex; i < m_InputStream.Count && m_TextBuffer.Length + ToBeDecoded.Length < m_BufferingSize; i++)
+            for (int i = m_InputStreamIndex; i < m_InputStream.Count && m_TextBuffer.Length + ToBeDecoded.Length < Constants.BufferingSize; i++)
             {
                 m_InputStreamIndex++;
 
                 if (i == m_InputStream.Count - 1)
                 {
                     m_TextBuffer += ToBeDecoded;
+
                     TrimPadding();
+
                     return;
                 }
                 else
                 {
                     string NewByte = Convert.ToString(m_InputStream[i], 2);
 
-                    NewByte = NewByte.PadLeft(8, '0');
+                    NewByte = NewByte.PadLeft(Constants.Byte, '0');
 
                     ToBeDecoded += NewByte;
                 }
@@ -198,59 +199,57 @@ namespace CompressionTool
 
         private void DecodeStream()
         {
-            int CurrentCode = CodeUnkown;
+            int CurrentCode = Constants.CodeUnkown;
             string ToBeEncoded = "";
 
             BufferText();
 
             while (m_TextBuffer.Length > 0)
             {
-                if (CurrentCode == CodeUnkown)
+                if (CurrentCode == Constants.CodeUnkown)
                 {
                     char FlagBit = GetFlagBit();
+
                     ToBeEncoded += FlagBit;
 
-                    if (FlagBit == Uncompressed)
-                        CurrentCode = CodeLiteral;
+                    if (FlagBit == Constants.Uncompressed)
+                        CurrentCode = Constants.CodeLiteral;
 
-                    else
-                        CurrentCode = CodeDistance;
+                    else if(FlagBit == Constants.Compressed)
+                        CurrentCode = Constants.CodeDistance;
                 }
 
-                else if (CurrentCode == CodeDistance)
+                else if (CurrentCode == Constants.CodeDistance)
                 {
                     ToBeEncoded += DecodeBackwardDistance();
 
-                    CurrentCode = CodeLength;
+                    CurrentCode = Constants.CodeLength;
                 }
 
-                else if (CurrentCode == CodeLength)
+                else if (CurrentCode == Constants.CodeLength)
                 {
                     ToBeEncoded += DecodeMatchLength();
 
-                    CurrentCode = CodeUnkown;
+                    CurrentCode = Constants.CodeUnkown;
                 }
 
-                else if (CurrentCode == CodeLiteral)
+                else if (CurrentCode == Constants.CodeLiteral)
                 {
                     ToBeEncoded += DecodeLiteral();
 
-                    CurrentCode = CodeUnkown;
+                    CurrentCode = Constants.CodeUnkown;
                 }
 
-                if (m_TextBuffer.Length == 0)
-                {
-                    BufferText();
-                }
-
+                if (m_TextBuffer.Length == 0) BufferText();
+                
                 ToBeEncoded = ToBinary(ToBeEncoded);
             }
 
             if (ToBeEncoded.Length > 0)
             {
-                m_MetaBytePadding = (byte)(8 - ToBeEncoded.Length);
+                m_MetaBytePadding = (byte)(Constants.Byte - ToBeEncoded.Length);
 
-                ToBeEncoded = ToBeEncoded.PadRight(8, '0');
+                ToBeEncoded = ToBeEncoded.PadRight(Constants.Byte, '0');
 
                 ToBinary(ToBeEncoded);
             }
@@ -262,22 +261,32 @@ namespace CompressionTool
         {
             int StartIndex = 0, ByteCount = 0;
 
-            while (StartIndex <= EncodedText.Length - 8)
+            while (StartIndex <= EncodedText.Length - Constants.Byte)
             {
-                byte StringByte = Convert.ToByte(EncodedText.Substring(StartIndex, 8), 2);
+                byte StringByte = Convert.ToByte(EncodedText.Substring(StartIndex, Constants.Byte), 2);
+
                 m_OutputStream.Add(StringByte);
-                StartIndex += 8;
+
+                StartIndex += Constants.Byte;
+
                 ByteCount++;
             }
 
-            return EncodedText.Substring(StartIndex, EncodedText.Length - 8 * ByteCount);
+            return EncodedText.Substring(StartIndex, EncodedText.Length - Constants.Byte * ByteCount);
+        }
+
+        private void DecodeFinal(string FileName)
+        {
+            LZ77Decoder LZ77Decoder = new LZ77Decoder(32 * 1024);
+
+            LZ77Decoder.Decode(FileName);
         }
 
         private void ProduceOutputFile(string FileName)
         {
-            OutputWriter Writer = new OutputWriter(FileName);
+            OutputWriter Writer = new OutputWriter();
 
-            Writer.WriteToInverseMetaFile(m_OutputStream);
+            Writer.WriteToDecompressionMetaData(m_OutputStream, FileName);
         }
 
         public Inflator()
@@ -290,19 +299,10 @@ namespace CompressionTool
             m_MatchLengthsHeader = new List<byte>();
             m_BackwardDistancesHeader = new List<byte>();
             m_OutputStream = new List<byte>();
-            m_LiteralsHeaderSize = 180;
-            m_MatchLengthsHeaderSize = 256;
-            m_BackwardDistanceHeaderSize = 256;
             m_InputBytePadding = 0;
             m_MetaBytePadding = 0;
-            m_BufferingSize = 10000;
             m_InputStreamIndex = 0;
             m_TextBuffer = "";
-            CodeUnkown = 0;
-            CodeDistance = 1;
-            CodeLength = 2;
-            CodeLiteral = 3;
-            Uncompressed = '0';
         }
 
         public void Inflate(string FileName)
@@ -316,6 +316,8 @@ namespace CompressionTool
             DecodeStream();
 
             ProduceOutputFile(FileName);
+
+            DecodeFinal(FileName);
         }
     }
 }

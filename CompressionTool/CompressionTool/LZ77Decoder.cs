@@ -11,54 +11,31 @@ namespace CompressionTool
     {
         private List<byte> m_SearchBuffer;
         private List<byte> m_InputStream;
-        private byte m_BytePadding;
-        private int m_InputStreamIndex;
-        private int m_BufferingSize;
-        private int CodeUnkown;
-        private int CodeDistance;
-        private int CodeLength;
-        private int CodeLiteral;
-        private int m_MinMatchLength;
-        private int m_MinBackwardDistance;
-        private int m_SearchBufferMaxSize;
-        private string m_TextBuffer;
-        private int m_LiteralCodewordLength;
-        private int m_BackwardDistanceCodewordLength;
-        private int m_MatchLengthCodewordLength;
-        private char Uncompressed;
         private StringBuilder m_DecodedOutput;
         private List<byte> m_OutputStream;
         private Dictionary<char, byte> m_Alphabet;
         private Dictionary<byte, char> m_InverseAlphabet;
+        private byte m_BytePadding;
+        private int m_InputStreamIndex;
+        private int m_SearchBufferMaxSize;
+        private string m_TextBuffer;
 
         private void ReadCompressedFile(string FileName)
         {
-            string FilePath = @"..\..\EncodedInverseMetaOutput\" + FileName + ".tsv";
+            InputReader InputReader = new InputReader();
 
-            byte[] temp = File.ReadAllBytes(FilePath);
+            m_InputStream = InputReader.ReadDecompressionMetaData(FileName);
 
-            m_BytePadding = temp[0]; 
+            m_BytePadding = m_InputStream[0];
 
-            for (int i = 1; i < temp.Length; i++)
-            {
-                m_InputStream.Add(temp[i]);
-            }
+            m_InputStream.RemoveAt(0);
         }
 
         private void LoadSymbolDictionary()
         {
-            byte id = 0;
+            InputReader InputReader = new InputReader();
 
-            string Text = System.IO.File.ReadAllText(@"..\..\SymbolDictionary.txt", Encoding.UTF8);
-
-            for (int i = 0; i < Text.Length; i++)
-            {
-                if (m_Alphabet.ContainsKey(Text[i]))
-                    continue;
-
-                m_Alphabet.Add(Text[i], id);
-                id++;
-            }
+            m_Alphabet = InputReader.ReadSymbolDictionary();
         }
 
         private void BuildInverseSymbolDictionary()
@@ -93,86 +70,84 @@ namespace CompressionTool
 
         private char GetFlagBit()
         {
-            if (m_TextBuffer.Length < 1)
-                BufferText();
+            BufferText();
 
             char FlagBit = m_TextBuffer[0];
 
-            m_TextBuffer = m_TextBuffer.Remove(0, 1);
+            m_TextBuffer = m_TextBuffer.Remove(0, Constants.Bit);
 
             return FlagBit;
         }
 
         private string GetLengthByte()
         {
-            //if (m_TextBuffer.Length < m_MatchLengthCodewordLength)
-                BufferText();
+            BufferText();
 
-            string LengthByte = m_TextBuffer.Substring(0, m_MatchLengthCodewordLength);
+            string LengthByte = m_TextBuffer.Substring(0, Constants.MatchLengthCodewordLength);
 
-            m_TextBuffer = m_TextBuffer.Remove(0, m_MatchLengthCodewordLength);
+            m_TextBuffer = m_TextBuffer.Remove(0, Constants.MatchLengthCodewordLength);
 
             return LengthByte;
         }
 
         private string GetLiteralByte()
         {
-            //if (m_TextBuffer.Length < m_LiteralCodewordLength)
-                BufferText();
+            BufferText();
 
-            string LiteralByte = m_TextBuffer.Substring(0, m_LiteralCodewordLength);
+            string LiteralByte = m_TextBuffer.Substring(0, Constants.LiteralCodewordLength);
 
-            m_TextBuffer = m_TextBuffer.Remove(0, m_LiteralCodewordLength);
+            m_TextBuffer = m_TextBuffer.Remove(0, Constants.LiteralCodewordLength);
 
             return LiteralByte;
         }
 
         private string GetDistanceBits()
-        {
-            //if (m_TextBuffer.Length < m_BackwardDistanceCodewordLength)
-                BufferText();
+        { 
+            BufferText();
 
-            string DistanceBits = m_TextBuffer.Substring(0, m_BackwardDistanceCodewordLength);
+            string DistanceBits = m_TextBuffer.Substring(0, Constants.BackwardDistanceCodewordLength);
 
-            m_TextBuffer = m_TextBuffer.Remove(0, m_BackwardDistanceCodewordLength);
+            m_TextBuffer = m_TextBuffer.Remove(0, Constants.BackwardDistanceCodewordLength);
 
             return DistanceBits;
         }
        
         private void TrimPadding()
         {
-            string tmp = Convert.ToString(m_InputStream[m_InputStream.Count - 1], 2);
+            string PaddedByte = Convert.ToString(m_InputStream[m_InputStream.Count - 1], 2);
 
             m_InputStreamIndex++;
 
-            tmp = tmp.PadLeft(8,'0');
+            PaddedByte = PaddedByte.PadLeft(Constants.Byte, '0');
        
-            string LastByte = tmp.Substring(0, tmp.Length - m_BytePadding);
+            string LastByte = PaddedByte.Substring(0, PaddedByte.Length - m_BytePadding);
 
             m_TextBuffer += LastByte;
         }
 
         private void BufferText()
         {
-            if (m_TextBuffer.Length >= m_BufferingSize) return;
+            if (m_TextBuffer.Length >= Constants.BufferingSize) return;
 
             String ToBeDecoded = "";
 
-            for (int i = m_InputStreamIndex; i < m_InputStream.Count && m_TextBuffer.Length + ToBeDecoded.Length < m_BufferingSize; i++)
+            for (int i = m_InputStreamIndex; i < m_InputStream.Count && m_TextBuffer.Length + ToBeDecoded.Length < Constants.BufferingSize; i++)
             {
                 m_InputStreamIndex++;
 
                 if (i == m_InputStream.Count - 1)
                 {
                     m_TextBuffer += ToBeDecoded;
+
                     TrimPadding();
+
                     return;
                 }
                 else
                 {
                     string NewByte = Convert.ToString(m_InputStream[i], 2);
 
-                    NewByte = NewByte.PadLeft(8, '0');
+                    NewByte = NewByte.PadLeft(Constants.Byte, '0');
 
                     ToBeDecoded += NewByte;
                 }
@@ -183,34 +158,34 @@ namespace CompressionTool
 
         private void LZ77Decode()
         {
-            int CurrentCode = CodeUnkown;
+            int CurrentCode = Constants.CodeUnkown;
             int BackwardDistance = 0, MatchLength = 0;
 
             BufferText();
 
             while (m_TextBuffer.Length > 0)
             {
-                if (CurrentCode == CodeUnkown)
+                if (CurrentCode == Constants.CodeUnkown)
                 {
                     char FlagBit = GetFlagBit();
 
-                    if (FlagBit == Uncompressed)
-                        CurrentCode = CodeLiteral;
+                    if (FlagBit == Constants.Uncompressed)
+                        CurrentCode = Constants.CodeLiteral;
 
-                    else
-                        CurrentCode = CodeDistance;
+                    else if(FlagBit == Constants.Compressed)
+                        CurrentCode = Constants.CodeDistance;
                 }
 
-                else if(CurrentCode == CodeDistance)
+                else if(CurrentCode == Constants.CodeDistance)
                 {
-                    BackwardDistance = Convert.ToInt32(GetDistanceBits(), 2) + m_MinBackwardDistance;
+                    BackwardDistance = Convert.ToInt32(GetDistanceBits(), 2) + Constants.MinBackwardDistance;
 
-                    CurrentCode = CodeLength;
+                    CurrentCode = Constants.CodeLength;
                 }
 
-                else if(CurrentCode == CodeLength)
+                else if(CurrentCode == Constants.CodeLength)
                 {
-                    MatchLength = Convert.ToInt32(GetLengthByte(), 2) + m_MinMatchLength;
+                    MatchLength = Convert.ToInt32(GetLengthByte(), 2) + Constants.MinMatchLength;
 
                     List<byte> ToBeDecoded = new List<byte>();
                     int Start = m_SearchBuffer.Count - BackwardDistance, End = Start + MatchLength;
@@ -224,11 +199,12 @@ namespace CompressionTool
 
                     SlideWindow(ToBeDecoded);
 
-                    CurrentCode = CodeUnkown;
+                    CurrentCode = Constants.CodeUnkown;
+
                     BackwardDistance = 0; MatchLength = 0;
                 }
 
-                else if(CurrentCode == CodeLiteral)
+                else if(CurrentCode == Constants.CodeLiteral)
                 {
                     byte Literal = Convert.ToByte(GetLiteralByte(), 2);
 
@@ -238,7 +214,7 @@ namespace CompressionTool
 
                     m_OutputStream.Add(Literal);
 
-                    CurrentCode = CodeUnkown;
+                    CurrentCode = Constants.CodeUnkown;
                 }
 
                 if(m_TextBuffer.Length == 0)
@@ -257,9 +233,9 @@ namespace CompressionTool
                 m_DecodedOutput.Append(Character);
             }
 
-            string FilePath = @"..\..\DecompressedFiles\" + FileName + ".tsv";
+            OutputWriter OutputWriter = new OutputWriter();
 
-            System.IO.File.WriteAllText(FilePath, m_DecodedOutput.ToString(), Encoding.UTF8);
+            OutputWriter.WriteFinalDecompressedFile(m_DecodedOutput.ToString(), FileName);
         }
 
         public LZ77Decoder(int SearchBufferMaxSize)
@@ -272,25 +248,12 @@ namespace CompressionTool
             m_InverseAlphabet = new Dictionary<byte, char>();
             m_InputStreamIndex = 0;
             m_TextBuffer = "";
-            m_BufferingSize = 10000;
-            CodeUnkown = 0;
-            CodeDistance = 1;
-            CodeLength = 2;
-            CodeLiteral = 3;
-            m_MinMatchLength = 3;
-            m_MinBackwardDistance = 1;
-            m_LiteralCodewordLength = 8;
-            m_BackwardDistanceCodewordLength = 15;
-            m_MatchLengthCodewordLength = 8;
             m_SearchBufferMaxSize = SearchBufferMaxSize;
-            Uncompressed = '0';
         }
 
         public void Decode(string FileName)
         {
             BuildInverseSymbolDictionary();
-
-            //Console.WriteLine("{0}", m_Alphabet['\r']);
 
             ReadCompressedFile(FileName);
 

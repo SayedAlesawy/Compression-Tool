@@ -9,36 +9,41 @@ namespace CompressionTool
 {
     class OutputWriter
     {
-        private string m_FileName;
- 
-        public OutputWriter(string FileName)
+        public OutputWriter()
         {
-            m_FileName = FileName;
+            
         }
 
-        public void WriteToFile(List<byte> EncodedStream)
+        public void WriteFinalCompressedFile(List<byte> EncodedStream, string FileName)
         {
-            string FilePath = @"..\..\EncodedOutput\" + m_FileName + ".tsv";
+            string FilePath = @"..\..\EncodedOutput\" + FileName + ".tsv";
 
             byte[] CompressedData = EncodedStream.ToArray();
+
+            File.WriteAllBytes(FilePath, CompressedData);
+        }
+
+        public void WriteFinalDecompressedFile(string Text, string FileName)
+        {
+            string FilePath = @"..\..\DecompressedFiles\" + FileName + ".tsv";
+
+            File.WriteAllText(FilePath, Text, Encoding.UTF8);
+        }
+
+        public void WriteToCompressionMetaData(List<byte> Stream, string FileName)
+        {
+            string FilePath = @"..\..\CompressionMetaData\" + FileName + ".tsv";
+
+            byte[] CompressedData = Stream.ToArray();
             
             File.WriteAllBytes(FilePath, CompressedData);
         }
 
-        public void WriteToMetaFile(List<byte> EncodedStream)
+        public void WriteToDecompressionMetaData(List<byte> Stream, string FileName)
         {
-            string FilePath = @"..\..\EncodedMetaOutput\" + m_FileName + ".tsv";
+            string FilePath = @"..\..\DecompressionMetaData\" + FileName + ".tsv";
 
-            byte[] CompressedData = EncodedStream.ToArray();
-
-            File.WriteAllBytes(FilePath, CompressedData);
-        }
-
-        public void WriteToInverseMetaFile(List<byte> EncodedStream)
-        {
-            string FilePath = @"..\..\EncodedInverseMetaOutput\" + m_FileName + ".tsv";
-
-            byte[] CompressedData = EncodedStream.ToArray();
+            byte[] CompressedData = Stream.ToArray();
 
             File.WriteAllBytes(FilePath, CompressedData);
         }

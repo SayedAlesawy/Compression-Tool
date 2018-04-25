@@ -28,12 +28,7 @@ namespace CompressionTool
         private int m_LookAheadBufferMaxSize;
         private int m_SearchBufferMaxSize;
         private int m_InputStreamIndex;
-        private int m_MinMatchLength;
-        private int m_MinBackwardDistance;
         private byte m_BytePadding;
-        private int m_LiteralCodewordLength;
-        private int m_BackwardDistanceCodewordLength;
-        private int m_MatchLengthCodewordLength;
         
         private void PopulateLookAheadBuffer()
         {
@@ -50,6 +45,7 @@ namespace CompressionTool
             if (m_InputStreamIndex >= m_InputStream.Count) return;
 
             byte InputByte = m_InputStream[m_InputStreamIndex];
+
             m_InputStreamIndex++;
 
             m_LookAheadBuffer.Add(InputByte);
@@ -83,7 +79,7 @@ namespace CompressionTool
 
         private Match GetLongestMatch()
         {
-            int LookAheadBufferIndex = 0, MaxMatchLength = 0, MinBackwardDistance = 100100;
+            int LookAheadBufferIndex = 0, MaxMatchLength = 0, MinBackwardDistance = Constants.Infinity;
 
             for(int SearchBufferIndex = m_SearchBuffer.Count - 1; SearchBufferIndex >= 0; SearchBufferIndex--)
             {
@@ -115,60 +111,63 @@ namespace CompressionTool
 
         private void WriteMatchLength(int Length)
         {
-            string len = Convert.ToString(Length, 2);
+            string MatchLength = Convert.ToString(Length, 2);
 
-            len = len.PadLeft(m_MatchLengthCodewordLength, '0');
+            MatchLength = MatchLength.PadLeft(Constants.MatchLengthCodewordLength, '0');
 
-            m_CompressedOutput += len;
+            m_CompressedOutput += MatchLength;
         }
 
         private void WriteBackwardDistance(int BackwardDistance)
         {
-            string dist = Convert.ToString(BackwardDistance, 2);
+            string Distance = Convert.ToString(BackwardDistance, 2);
 
-            dist = dist.PadLeft(m_BackwardDistanceCodewordLength, '0');
+            Distance = Distance.PadLeft(Constants.BackwardDistanceCodewordLength, '0');
 
-            m_CompressedOutput += dist;
+            m_CompressedOutput += Distance;
         }
 
         private void WriteLiteral(byte Literal)
         {
-            string lit = Convert.ToString(Literal, 2);
+            string Symbol = Convert.ToString(Literal, 2);
 
-            lit = lit.PadLeft(m_LiteralCodewordLength, '0');
+            Symbol = Symbol.PadLeft(Constants.LiteralCodewordLength, '0');
 
-            m_CompressedOutput += lit;
+            m_CompressedOutput += Symbol;
         }
 
         private void WriteUncompressedLiteral(byte Literal)
         {
-            m_CompressedOutput += '0';
+            m_CompressedOutput += Constants.Uncompressed;
 
             WriteLiteral(Literal);
         }
 
         private void WriteCompressedSequence(Match Match)
         {
-            m_CompressedOutput += '1';
+            m_CompressedOutput += Constants.Compressed;
 
-            WriteBackwardDistance(Match.BackwardDistance - m_MinBackwardDistance);
+            WriteBackwardDistance(Match.BackwardDistance - Constants.MinBackwardDistance);
 
-            WriteMatchLength(Match.MatchLength - m_MinMatchLength);
+            WriteMatchLength(Match.MatchLength - Constants.MinMatchLength);
         }
 
         private string ToBinary()
         {
             int StartIndex = 0, ByteCount = 0;
 
-            while (StartIndex <= m_CompressedOutput.Length - 8)
+            while (StartIndex <= m_CompressedOutput.Length - Constants.Byte)
             {
-                byte StringByte = Convert.ToByte(m_CompressedOutput.Substring(StartIndex, 8), 2);
+                byte StringByte = Convert.ToByte(m_CompressedOutput.Substring(StartIndex, Constants.Byte), 2);
+
                 m_CompressedStream.Add(StringByte);
-                StartIndex += 8;
+
+                StartIndex += Constants.Byte;
+
                 ByteCount++;
             }
 
-            return m_CompressedOutput.Substring(StartIndex, m_CompressedOutput.Length - 8 * ByteCount);
+            return m_CompressedOutput.Substring(StartIndex, m_CompressedOutput.Length - Constants.Byte * ByteCount);
         }
 
         private void LZ77Encode()
@@ -177,12 +176,13 @@ namespace CompressionTool
             {
                 Match Match = GetLongestMatch();
 
-                if (Match.MatchLength > m_MinMatchLength)
+                if (Match.MatchLength > Constants.MinMatchLength)
                 {
                     WriteCompressedSequence(Match);
 
                     SlideWindow(Match.MatchLength);
                 }
+
                 else
                 {
                     WriteUncompressedLiteral(m_LookAheadBuffer[0]);
@@ -195,9 +195,9 @@ namespace CompressionTool
 
             if (m_CompressedOutput.Length > 0)
             {
-                m_BytePadding = (byte)(8 - m_CompressedOutput.Length);
+                m_BytePadding = (byte)(Constants.Byte - m_CompressedOutput.Length);
 
-                m_CompressedOutput = m_CompressedOutput.PadRight(8, '0');
+                m_CompressedOutput = m_CompressedOutput.PadRight(Constants.Byte, '0');
                 
                 ToBinary();
             }
@@ -207,9 +207,9 @@ namespace CompressionTool
 
         private void ProduceFile(string FileName)
         {
-            OutputWriter writer = new OutputWriter(FileName);
+            OutputWriter writer = new OutputWriter();
 
-            writer.WriteToMetaFile(m_CompressedStream);
+            writer.WriteToCompressionMetaData(m_CompressedStream, FileName);
         }
 
         public LZ77Encoder(int LookAheadBufferSize, int SearchBufferSize)
@@ -222,12 +222,7 @@ namespace CompressionTool
             m_LookAheadBufferMaxSize = LookAheadBufferSize;
             m_SearchBufferMaxSize = SearchBufferSize;
             m_InputStreamIndex = 0;
-            m_MinMatchLength = 3;
-            m_MinBackwardDistance = 1;
             m_BytePadding = 0;
-            m_LiteralCodewordLength = 8;
-            m_BackwardDistanceCodewordLength = 15; 
-            m_MatchLengthCodewordLength = 8;
         }
 
         public void Encode(List<byte> InputStream, string FileName)

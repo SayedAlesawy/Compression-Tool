@@ -14,25 +14,15 @@ namespace CompressionTool
 
         private void LoadSymbolDictionary()
         {
-            byte id = 0;
+            InputReader InputReader = new InputReader();
 
-            string Text = System.IO.File.ReadAllText(@"..\..\SymbolDictionary.txt", Encoding.UTF8);
-
-            for (int i = 0; i < Text.Length; i++)
-            {
-                if (m_Alphabet.ContainsKey(Text[i]))
-                    continue;
-
-                m_Alphabet.Add(Text[i], id);
-                id++;
-            }
+            m_Alphabet = InputReader.ReadSymbolDictionary();
         }
 
         private void ConvertText(string Text)
         {
             for(int i = 0; i < Text.Length; i++)
             {
-                char c = Text[i];
                 m_InputStream.Add(m_Alphabet[Text[i]]);
             }
         }
@@ -46,8 +36,8 @@ namespace CompressionTool
 
         public List<byte> Convert()
         {
-            InputReader InputReader = new InputReader(m_FileName);
-            string Text = InputReader.GetFileContent();
+            InputReader InputReader = new InputReader();
+            string Text = InputReader.ReadOriginalFile(m_FileName);
 
             LoadSymbolDictionary();
 

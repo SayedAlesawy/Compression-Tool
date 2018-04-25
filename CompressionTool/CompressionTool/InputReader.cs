@@ -3,30 +3,69 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace CompressionTool
 {
     class InputReader
     {
-        private string m_FileName;
-        private string m_FileContent;
+        public InputReader()
+        {
 
-        private void ReadFile()
-        { 
-            string FilePath = @"..\..\Dataset\" + m_FileName + ".tsv";
-
-            m_FileContent = System.IO.File.ReadAllText(FilePath);
         }
 
-        public InputReader (string FileName)
+        public string ReadOriginalFile(string FileName)
         {
-            m_FileName = FileName;
+            string FilePath = @"..\..\Dataset\" + FileName + ".tsv";
+
+            return File.ReadAllText(FilePath); 
         }
 
-        public string GetFileContent()
+        public List<byte> ReadFinalEncodedFile(string FileName)
         {
-            ReadFile();
-            return m_FileContent;
+            string FilePath = @"..\..\EncodedOutput\" + FileName + ".tsv";
+
+            byte[] InputStream = File.ReadAllBytes(FilePath);
+
+           return InputStream.ToList<byte>();
+        }
+
+        public List<byte> ReadDecompressionMetaData(string FileName)
+        {
+            string FilePath = @"..\..\DecompressionMetaData\" + FileName + ".tsv";
+
+            byte[] InputStream = File.ReadAllBytes(FilePath);
+
+            return InputStream.ToList<byte>();
+        }
+
+        public List<byte> ReadCompressionMetaData(string FileName)
+        {
+            string FilePath = @"..\..\CompressionMetaData\" + FileName + ".tsv";
+
+            byte[] InputStream = File.ReadAllBytes(FilePath);
+
+            return InputStream.ToList<byte>();
+        }
+
+        public Dictionary<char, byte> ReadSymbolDictionary()
+        {
+            byte id = 0;
+
+            Dictionary<char, byte> Alphabet = new Dictionary<char, byte>();
+
+            string Text = File.ReadAllText(@"..\..\SymbolDictionary.txt", Encoding.UTF8);
+
+            for (int i = 0; i < Text.Length; i++)
+            {
+                if (Alphabet.ContainsKey(Text[i]))
+                    continue;
+
+                Alphabet.Add(Text[i], id);
+                id++;
+            }
+
+            return Alphabet;
         }
     }
 }

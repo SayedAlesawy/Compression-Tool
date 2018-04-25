@@ -13,11 +13,7 @@ namespace CompressionTool
         private List<HuffmanNode> m_HuffmanNodes;
         private Dictionary<byte, string> m_EncodingDictionary;
         private Dictionary<byte, string> m_CanonicalEncodingDictionary;
-        private List<byte> m_EncodedStream;
-        private List<byte> m_InputStream;
         private List<byte> m_Header;
-        private int m_HeaderSize;
-        private byte m_BytePadding;
 
         private void GetHuffmanNodes()
         {
@@ -103,68 +99,18 @@ namespace CompressionTool
             }
         }
 
-        private void GetEncodedOutput()
-        {
-            string EncodedText = "";
-
-            for (int i = 0; i < m_InputStream.Count; i++)
-            {
-                byte b = m_InputStream[i];
-                EncodedText += m_CanonicalEncodingDictionary[m_InputStream[i]];
-                EncodedText = ToBinary(EncodedText);
-            }
-
-            if (EncodedText.Length > 0)
-            {
-                while (EncodedText.Length < 8)
-                {
-                    EncodedText += '0';
-                    m_BytePadding++;
-                }
-                ToBinary(EncodedText);
-            }
-
-            m_EncodedStream.Insert(m_HeaderSize, m_BytePadding);
-        }
-
-        private string ToBinary(string EncodedText)
-        {
-            int StartIndex = 0, ByteCount = 0;
-
-            while (StartIndex <= EncodedText.Length - 8)
-            {
-                byte StringByte = Convert.ToByte(EncodedText.Substring(StartIndex, 8), 2);
-                m_EncodedStream.Add(StringByte);
-                StartIndex += 8;
-                ByteCount++;
-            }
-
-            return EncodedText.Substring(StartIndex, EncodedText.Length - 8 * ByteCount);
-        }
-
-        private void OutputEncodedFile(string FileName)
-        {
-            GetEncodedOutput();
-
-            OutputWriter OutputWriter = new OutputWriter(FileName);
-            OutputWriter.WriteToFile(m_EncodedStream);
-        }
-
-       
         private void BuildHeader(int HeaderSize)
         {
             for (int i = 0; i < HeaderSize; i++) 
             {
-                //Console.WriteLine("{0}", i);
                 if (m_CanonicalEncodingDictionary.ContainsKey((byte)i))
                 {
                     byte CodeLength = (byte) m_CanonicalEncodingDictionary[(byte)i].Length;
-                    //m_EncodedStream.Add(CodeLength);
+                   
                     m_Header.Add(CodeLength);
                 }
                 else
                 {
-                    //m_EncodedStream.Add(0);
                     m_Header.Add(0);
                 }
             }
@@ -176,11 +122,7 @@ namespace CompressionTool
             m_HuffmanNodes = new List<HuffmanNode>();
             m_EncodingDictionary = new Dictionary<byte, string>();
             m_CanonicalEncodingDictionary = new Dictionary<byte, string>();
-            m_InputStream = new List<byte>();
-            m_EncodedStream = new List<byte>();
             m_Header = new List<byte>();
-            m_BytePadding = 0;
-            m_HeaderSize = 180;
         }
 
         public Dictionary<byte, string> GetCodeBook(Dictionary<byte, int> CharactersCount)
@@ -203,25 +145,6 @@ namespace CompressionTool
             BuildHeader(HeaderSize);
 
             return m_Header;
-        }
-
-        public void Encode(Dictionary<byte, int> CharactersCount, List<byte> InputStream, string FileName)
-        {
-            m_InputStream = InputStream;
-
-            m_CharactersCount = CharactersCount;
-
-            GetHuffmanNodes();
-
-            ReduceHuffmanNodes(m_HuffmanNodes);
-
-            BuildHuffmanTree("", m_HuffmanNodes[0]);
-
-            GetCanonicalCodes();
-
-            BuildHeader(180);
-
-            OutputEncodedFile(FileName);
         }
     }
 }

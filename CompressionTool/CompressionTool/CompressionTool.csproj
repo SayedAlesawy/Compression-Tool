@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
+    <Compile Include="Deflator.cs" />
     <Compile Include="HuffmanDecoder.cs" />
     <Compile Include="HuffmanEncoder.cs" />
     <Compile Include="HuffmanNode.cs" />
@@ -50,7 +52,6 @@
     <Compile Include="InputReader.cs" />
     <Compile Include="LZ77Decoder.cs" />
     <Compile Include="LZ77Encoder.cs" />
-    <Compile Include="LZ77ToHuffmanAdapter.cs" />
     <Compile Include="OutputWriter.cs" />
     <Compile Include="Probability.cs" />
     <Compile Include="Program.cs" />
