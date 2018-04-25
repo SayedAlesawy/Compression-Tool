@@ -15,6 +15,7 @@ namespace CompressionTool
         private Dictionary<byte, string> m_CanonicalEncodingDictionary;
         private List<byte> m_EncodedStream;
         private List<byte> m_InputStream;
+        private List<byte> m_Header;
         private int m_HeaderSize;
         private byte m_BytePadding;
 
@@ -150,18 +151,21 @@ namespace CompressionTool
         }
 
        
-        private void BuildHeader()
+        private void BuildHeader(int HeaderSize)
         {
-            for (byte i = 0; i < m_HeaderSize; i++) 
+            for (int i = 0; i < HeaderSize; i++) 
             {
-                if (m_CanonicalEncodingDictionary.ContainsKey(i))
+                //Console.WriteLine("{0}", i);
+                if (m_CanonicalEncodingDictionary.ContainsKey((byte)i))
                 {
-                    byte CodeLength = (byte) m_CanonicalEncodingDictionary[i].Length;
-                    m_EncodedStream.Add(CodeLength);
+                    byte CodeLength = (byte) m_CanonicalEncodingDictionary[(byte)i].Length;
+                    //m_EncodedStream.Add(CodeLength);
+                    m_Header.Add(CodeLength);
                 }
                 else
                 {
-                    m_EncodedStream.Add(0);
+                    //m_EncodedStream.Add(0);
+                    m_Header.Add(0);
                 }
             }
         }
@@ -174,8 +178,31 @@ namespace CompressionTool
             m_CanonicalEncodingDictionary = new Dictionary<byte, string>();
             m_InputStream = new List<byte>();
             m_EncodedStream = new List<byte>();
+            m_Header = new List<byte>();
             m_BytePadding = 0;
             m_HeaderSize = 180;
+        }
+
+        public Dictionary<byte, string> GetCodeBook(Dictionary<byte, int> CharactersCount)
+        {
+            m_CharactersCount = CharactersCount;
+
+            GetHuffmanNodes();
+
+            ReduceHuffmanNodes(m_HuffmanNodes);
+
+            BuildHuffmanTree("", m_HuffmanNodes[0]);
+
+            GetCanonicalCodes();
+
+            return m_CanonicalEncodingDictionary;
+        }
+
+        public List<byte> GetHeader(int HeaderSize)
+        {
+            BuildHeader(HeaderSize);
+
+            return m_Header;
         }
 
         public void Encode(Dictionary<byte, int> CharactersCount, List<byte> InputStream, string FileName)
@@ -192,7 +219,7 @@ namespace CompressionTool
 
             GetCanonicalCodes();
 
-            BuildHeader();
+            BuildHeader(180);
 
             OutputEncodedFile(FileName);
         }

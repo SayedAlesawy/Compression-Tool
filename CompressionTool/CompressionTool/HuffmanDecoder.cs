@@ -10,6 +10,7 @@ namespace CompressionTool
     class HuffmanDecoder
     {
         private Dictionary<string, char> m_DecodingDictionary;
+        private Dictionary<string, byte> m_DecodingCodeBook;
         private Dictionary<char, int> m_Alphabet;
         private Dictionary<int, char> m_InverseAlphabet;
         private Dictionary<byte, int> m_LengthSymbolCount;
@@ -54,6 +55,7 @@ namespace CompressionTool
             m_BytePadding = m_CompressedData[m_InverseAlphabet.Count];
         }
 
+        /*
         private void GetLengthSymbolCount()
         {
             for (int i = 0; i < m_InverseAlphabet.Count; i++)
@@ -72,7 +74,81 @@ namespace CompressionTool
                 m_MaxCodewordLength = Math.Max(m_MaxCodewordLength, m_CompressedData[i]);
             }
         }
+        */
 
+        private void GetLengthSymbolCount(List<byte> AlphabetHeader)
+        {
+            for (int i = 0; i < AlphabetHeader.Count; i++)
+            {
+                if (AlphabetHeader[i] == 0) continue;
+
+                if (m_LengthSymbolCount.ContainsKey(AlphabetHeader[i]))
+                {
+                    m_LengthSymbolCount[AlphabetHeader[i]]++;
+                }
+                else
+                {
+                    m_LengthSymbolCount.Add(AlphabetHeader[i], 1);
+                }
+
+                m_MaxCodewordLength = Math.Max(m_MaxCodewordLength, AlphabetHeader[i]);
+            }
+        }
+
+        private void GetSymbolsPerLength(List<byte> AlphabetHeader)
+        {
+            for (int i = 0; i < AlphabetHeader.Count; i++)
+            {
+                if (m_SymbolsPerLength.ContainsKey(AlphabetHeader[i]))
+                {
+                    m_SymbolsPerLength[AlphabetHeader[i]].Add((byte)i);
+                }
+                else
+                {
+                    List<byte> tmp = new List<byte>();
+                    tmp.Add((byte)i);
+                    m_SymbolsPerLength.Add(AlphabetHeader[i], tmp);
+                }
+            }
+        }
+
+        private void DecodeSymbols(List<byte> AlphabetHeader)
+        {
+            GetLengthSymbolCount(AlphabetHeader);
+
+            GetSymbolsPerLength(AlphabetHeader);
+
+            string code = ""; long next = 0;
+
+            for (byte len = 1; len <= m_MaxCodewordLength; len++)
+            {
+                if (m_SymbolsPerLength.ContainsKey(len))
+                {
+                    List<byte> Symbols = m_SymbolsPerLength[len];
+                    Symbols.Sort();
+
+                    for (int i = 0; i < Symbols.Count; i++)
+                    {
+                        int rem = len - code.Length;
+                        for (int j = 0; j < rem; j++) code += '0';
+
+                        m_DecodingCodeBook.Add(code, Symbols[i]);
+
+                        int PreSize = code.Length;
+                        next = Convert.ToInt64(code, 2) + 1;
+                        code = Convert.ToString(next, 2);
+
+                        int LeftPadding = PreSize - code.Length; string Padding = "";
+
+                        for (int p = 0; p < LeftPadding; p++) Padding += '0';
+
+                        code = Padding + code;
+                    }
+                }
+            }
+        }
+
+        /*
         private void GetSymbolsPerLength()
         {
             for (int i = 0; i < m_InverseAlphabet.Count ; i++)
@@ -89,42 +165,45 @@ namespace CompressionTool
                 }
             }
         }
+        */
 
-        private void DecodeSymbols()
+        /*
+    private void DecodeSymbols()
+    {
+        GetLengthSymbolCount();
+
+        GetSymbolsPerLength();
+
+        string code = ""; long next = 0;
+
+        for (byte len = 1; len <= m_MaxCodewordLength; len++)
         {
-            GetLengthSymbolCount();
-
-            GetSymbolsPerLength();
-
-            string code = ""; long next = 0;
-
-            for (byte len = 1; len <= m_MaxCodewordLength; len++)
+            if (m_SymbolsPerLength.ContainsKey(len))
             {
-                if (m_SymbolsPerLength.ContainsKey(len))
+                List<byte> Symbols = m_SymbolsPerLength[len];
+                Symbols.Sort();
+
+                for (int i = 0; i < Symbols.Count; i++)
                 {
-                    List<byte> Symbols = m_SymbolsPerLength[len];
-                    Symbols.Sort();
+                    int rem = len - code.Length;
+                    for (int j = 0; j < rem; j++) code += '0';
 
-                    for (int i = 0; i < Symbols.Count; i++)
-                    {
-                        int rem = len - code.Length;
-                        for (int j = 0; j < rem; j++) code += '0';
+                    m_DecodingDictionary.Add(code, m_InverseAlphabet[Symbols[i]]);
 
-                        m_DecodingDictionary.Add(code, m_InverseAlphabet[Symbols[i]]);
+                    int PreSize = code.Length;
+                    next = Convert.ToInt64(code, 2) + 1;
+                    code = Convert.ToString(next, 2);
 
-                        int PreSize = code.Length;
-                        next = Convert.ToInt64(code, 2) + 1;
-                        code = Convert.ToString(next, 2);
+                    int LeftPadding = PreSize - code.Length; string Padding = "";
 
-                        int LeftPadding = PreSize - code.Length; string Padding = "";
+                    for (int p = 0; p < LeftPadding; p++) Padding += '0';
 
-                        for (int p = 0; p < LeftPadding; p++) Padding += '0';
-
-                        code = Padding + code;
-                    }
+                    code = Padding + code;
                 }
             }
         }
+    }
+    */
 
         private string DecodePartialText(string PartialText)
         {
@@ -202,10 +281,19 @@ namespace CompressionTool
             m_LengthSymbolCount = new Dictionary<byte, int>();
             m_SymbolsPerLength = new Dictionary<byte, List<byte>>();
             m_DecodedText = new StringBuilder();
+            m_DecodingCodeBook = new Dictionary<string, byte>();
             m_BytePadding = 0;
             m_MaxCodewordLength = 1;
         }
 
+        public Dictionary<string, byte> GetCodeBook(List<byte> AlphabetHeader)
+        {
+            DecodeSymbols(AlphabetHeader);
+
+            return m_DecodingCodeBook;
+        }
+        
+        /*
         public void Decode(string FileName)
         {
             BuildInverseSymbolDictionary();
@@ -218,5 +306,6 @@ namespace CompressionTool
 
             ProduceDecompressedFile(FileName);
         }
+        */
     }
 }

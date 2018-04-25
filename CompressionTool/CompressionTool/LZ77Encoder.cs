@@ -34,7 +34,7 @@ namespace CompressionTool
         private int m_LiteralCodewordLength;
         private int m_BackwardDistanceCodewordLength;
         private int m_MatchLengthCodewordLength;
-
+        
         private void PopulateLookAheadBuffer()
         {
             for(int i = 0; i < m_LookAheadBufferMaxSize && m_InputStreamIndex < m_InputStream.Count; i++)
@@ -186,7 +186,7 @@ namespace CompressionTool
                 else
                 {
                     WriteUncompressedLiteral(m_LookAheadBuffer[0]);
-
+                   
                     SlideWindow(1);
                 }
 
@@ -209,7 +209,7 @@ namespace CompressionTool
         {
             OutputWriter writer = new OutputWriter(FileName);
 
-            writer.WriteToFile(m_CompressedStream);
+            writer.WriteToMetaFile(m_CompressedStream);
         }
 
         public LZ77Encoder(int LookAheadBufferSize, int SearchBufferSize)

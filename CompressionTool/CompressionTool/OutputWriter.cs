@@ -24,5 +24,23 @@ namespace CompressionTool
             
             File.WriteAllBytes(FilePath, CompressedData);
         }
+
+        public void WriteToMetaFile(List<byte> EncodedStream)
+        {
+            string FilePath = @"..\..\EncodedMetaOutput\" + m_FileName + ".tsv";
+
+            byte[] CompressedData = EncodedStream.ToArray();
+
+            File.WriteAllBytes(FilePath, CompressedData);
+        }
+
+        public void WriteToInverseMetaFile(List<byte> EncodedStream)
+        {
+            string FilePath = @"..\..\EncodedInverseMetaOutput\" + m_FileName + ".tsv";
+
+            byte[] CompressedData = EncodedStream.ToArray();
+
+            File.WriteAllBytes(FilePath, CompressedData);
+        }
     }
 }

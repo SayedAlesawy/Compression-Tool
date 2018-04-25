@@ -33,7 +33,7 @@ namespace CompressionTool
 
         private void ReadCompressedFile(string FileName)
         {
-            string FilePath = @"..\..\EncodedOutput\" + FileName + ".tsv";
+            string FilePath = @"..\..\EncodedInverseMetaOutput\" + FileName + ".tsv";
 
             byte[] temp = File.ReadAllBytes(FilePath);
 
@@ -105,7 +105,7 @@ namespace CompressionTool
 
         private string GetLengthByte()
         {
-            if (m_TextBuffer.Length < m_MatchLengthCodewordLength)
+            //if (m_TextBuffer.Length < m_MatchLengthCodewordLength)
                 BufferText();
 
             string LengthByte = m_TextBuffer.Substring(0, m_MatchLengthCodewordLength);
@@ -117,7 +117,7 @@ namespace CompressionTool
 
         private string GetLiteralByte()
         {
-            if (m_TextBuffer.Length < m_LiteralCodewordLength)
+            //if (m_TextBuffer.Length < m_LiteralCodewordLength)
                 BufferText();
 
             string LiteralByte = m_TextBuffer.Substring(0, m_LiteralCodewordLength);
@@ -129,7 +129,7 @@ namespace CompressionTool
 
         private string GetDistanceBits()
         {
-            if (m_TextBuffer.Length < m_BackwardDistanceCodewordLength)
+            //if (m_TextBuffer.Length < m_BackwardDistanceCodewordLength)
                 BufferText();
 
             string DistanceBits = m_TextBuffer.Substring(0, m_BackwardDistanceCodewordLength);
@@ -158,7 +158,7 @@ namespace CompressionTool
 
             String ToBeDecoded = "";
 
-            for (int i = m_InputStreamIndex; i < m_InputStream.Count && ToBeDecoded.Length < m_BufferingSize; i++)
+            for (int i = m_InputStreamIndex; i < m_InputStream.Count && m_TextBuffer.Length + ToBeDecoded.Length < m_BufferingSize; i++)
             {
                 m_InputStreamIndex++;
 
@@ -290,7 +290,7 @@ namespace CompressionTool
         {
             BuildInverseSymbolDictionary();
 
-            Console.WriteLine("{0}", m_Alphabet['\r']);
+            //Console.WriteLine("{0}", m_Alphabet['\r']);
 
             ReadCompressedFile(FileName);
 
