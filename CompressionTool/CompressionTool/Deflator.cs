@@ -49,7 +49,7 @@ namespace CompressionTool
 
         private void EncodeLZ77(string FileName)
         {
-            LZ77Encoder LZ77Encoder = new LZ77Encoder(258, 32 * 1024);
+            LZ77Encoder LZ77Encoder = new LZ77Encoder(258, Constants.SearchBufferSize * 1024);
             LZ77Encoder.Encode(m_OriginalFile, FileName);
         }
 
@@ -317,7 +317,7 @@ namespace CompressionTool
             m_InputBytePadding = 0;
         }
 
-        public void Deflate(string FileName)
+        public int Deflate(string FileName)
         {
             ConvertOriginalFileToBytes(FileName);
 
@@ -336,6 +336,8 @@ namespace CompressionTool
             EncodeHuffman();
 
             ProduceFile(FileName);
+
+            return m_CompressedOutput.Count;
         }
     }
 }

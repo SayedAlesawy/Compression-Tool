@@ -275,11 +275,11 @@ namespace CompressionTool
             return EncodedText.Substring(StartIndex, EncodedText.Length - Constants.Byte * ByteCount);
         }
 
-        private void DecodeFinal(string FileName)
+        private int DecodeFinal(string FileName)
         {
-            LZ77Decoder LZ77Decoder = new LZ77Decoder(32 * 1024);
+            LZ77Decoder LZ77Decoder = new LZ77Decoder(Constants.SearchBufferSize * 1024);
 
-            LZ77Decoder.Decode(FileName);
+            return LZ77Decoder.Decode(FileName);
         }
 
         private void ProduceOutputFile(string FileName)
@@ -305,7 +305,7 @@ namespace CompressionTool
             m_TextBuffer = "";
         }
 
-        public void Inflate(string FileName)
+        public int Inflate(string FileName)
         {
             ReadCompressedFile(FileName);
 
@@ -317,7 +317,7 @@ namespace CompressionTool
 
             ProduceOutputFile(FileName);
 
-            DecodeFinal(FileName);
+            return DecodeFinal(FileName);
         }
     }
 }

@@ -251,7 +251,7 @@ namespace CompressionTool
             m_SearchBufferMaxSize = SearchBufferMaxSize;
         }
 
-        public void Decode(string FileName)
+        public int Decode(string FileName)
         {
             BuildInverseSymbolDictionary();
 
@@ -260,6 +260,8 @@ namespace CompressionTool
             LZ77Decode();
 
             ProduceOutputFile(FileName);
+
+            return m_OutputStream.Count;
         }
     }
 }

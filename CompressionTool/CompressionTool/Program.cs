@@ -10,7 +10,7 @@ namespace CompressionTool
     {
         static double CompressionTotalTime = 0;
         static double DecompressionTotalTime = 0;
-
+    
         static void Compress(string FileName, int FileNumber)
         {
             var Watch = System.Diagnostics.Stopwatch.StartNew();
@@ -60,7 +60,7 @@ namespace CompressionTool
         {
             int FileCount = 0;
 
-            for (int file = 18; file <= 20; file++)
+            for (int file = 10; file <= 10; file++)
             {
                 string FileName = "DataSet_" + file.ToString();
 

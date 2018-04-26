@@ -11,7 +11,8 @@ namespace CompressionTool
         static public int MinMatchLength = 3;
         static public int MinBackwardDistance = 1;
         static public int LiteralCodewordLength = 8;
-        static public int BackwardDistanceCodewordLength = 15;
+        static public int BackwardDistanceCodewordLength = 19;
+        static public int SearchBufferSize = 512;
         static public int MatchLengthCodewordLength = 8;
         static public int BufferingSize = 10000;
         static public int CodeUnkown = 0;
@@ -26,7 +27,7 @@ namespace CompressionTool
         static public int BytePaddingSize = 1;
         static public int Bit = 1;
         static public int Byte = 8;
-        static public int Infinity = 100100;
+        static public int Infinity = 1000000000;
         static public int LZ77 = 1;
         static public int Huffman = 0;
     }
