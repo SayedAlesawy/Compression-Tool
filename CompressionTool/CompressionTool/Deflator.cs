@@ -49,7 +49,7 @@ namespace CompressionTool
 
         private void EncodeLZ77(string FileName)
         {
-            LZ77Encoder LZ77Encoder = new LZ77Encoder(258, Constants.SearchBufferSize * 1024);
+            LZ77Encoder LZ77Encoder = new LZ77Encoder(Constants.LookAheadBufferSize, Constants.SearchBufferSize);
             LZ77Encoder.Encode(m_OriginalFile, FileName);
         }
 

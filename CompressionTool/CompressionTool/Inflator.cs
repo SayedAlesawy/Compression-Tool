@@ -277,7 +277,7 @@ namespace CompressionTool
 
         private int DecodeFinal(string FileName)
         {
-            LZ77Decoder LZ77Decoder = new LZ77Decoder(Constants.SearchBufferSize * 1024);
+            LZ77Decoder LZ77Decoder = new LZ77Decoder(Constants.SearchBufferSize);
 
             return LZ77Decoder.Decode(FileName);
         }

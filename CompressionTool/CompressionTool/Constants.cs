@@ -8,12 +8,13 @@ namespace CompressionTool
 {
     class Constants
     {
-        static public int MinMatchLength = 3;
+        static public int MinMatchLength = 4;
         static public int MinBackwardDistance = 1;
         static public int LiteralCodewordLength = 8;
-        static public int BackwardDistanceCodewordLength = 19;
-        static public int SearchBufferSize = 512;
+        static public int BackwardDistanceCodewordLength = 18;
+        static public int SearchBufferSize = (1 << BackwardDistanceCodewordLength);
         static public int MatchLengthCodewordLength = 8;
+        static public int LookAheadBufferSize = (1 << MatchLengthCodewordLength) + 2;
         static public int BufferingSize = 10000;
         static public int CodeUnkown = 0;
         static public int CodeDistance = 1;
