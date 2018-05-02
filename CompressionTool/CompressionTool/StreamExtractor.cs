@@ -17,12 +17,8 @@ namespace CompressionTool
         private byte m_BytePadding;
         private string m_TextBuffer;
 
-        private void LoadMetaFile(string FileName)
+        private void ExtractPadding()
         {
-            InputReader InputReader = new InputReader();
-
-            m_InputStream = InputReader.ReadCompressionMetaData(FileName);
-
             m_BytePadding = m_InputStream[0];
 
             m_InputStream.RemoveAt(0);
@@ -171,16 +167,16 @@ namespace CompressionTool
             }
         }
 
-        public StreamExtractor(string FileName)
+        public StreamExtractor(List<byte> InputStream)
         {
             m_Literals = new List<byte>();
             m_MatchLengths = new List<byte>();
-            m_InputStream = new List<byte>();
+            m_InputStream = InputStream;
             m_BackwardDistances = new List<byte>();
             m_TextBuffer = "";
             m_InputStreamIndex = 0;
 
-            LoadMetaFile(FileName);
+            ExtractPadding();
 
             ExtractMetaStreams();
         }

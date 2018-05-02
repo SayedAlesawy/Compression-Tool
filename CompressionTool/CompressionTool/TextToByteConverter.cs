@@ -34,6 +34,14 @@ namespace CompressionTool
             m_Alphabet = new Dictionary<char, byte>();
         }
 
+        public int GetOriginalFileSize()
+        {
+            string FilePath = @"..\..\Dataset\" + m_FileName + ".tsv";
+            byte[] tmp = System.IO.File.ReadAllBytes(FilePath);
+            
+            return tmp.Length;
+        }
+
         public List<byte> Convert()
         {
             InputReader InputReader = new InputReader();

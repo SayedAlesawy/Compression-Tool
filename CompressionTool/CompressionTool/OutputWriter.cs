@@ -11,7 +11,7 @@ namespace CompressionTool
     {
         public OutputWriter()
         {
-            
+            //Empty
         }
 
         public void WriteFinalCompressedFile(List<byte> EncodedStream, string FileName)
@@ -28,24 +28,6 @@ namespace CompressionTool
             string FilePath = @"..\..\DecompressedFiles\" + FileName + ".tsv";
 
             File.WriteAllText(FilePath, Text, Encoding.UTF8);
-        }
-
-        public void WriteToCompressionMetaData(List<byte> Stream, string FileName)
-        {
-            string FilePath = @"..\..\CompressionMetaData\" + FileName + ".tsv";
-
-            byte[] CompressedData = Stream.ToArray();
-            
-            File.WriteAllBytes(FilePath, CompressedData);
-        }
-
-        public void WriteToDecompressionMetaData(List<byte> Stream, string FileName)
-        {
-            string FilePath = @"..\..\DecompressionMetaData\" + FileName + ".tsv";
-
-            byte[] CompressedData = Stream.ToArray();
-
-            File.WriteAllBytes(FilePath, CompressedData);
         }
     }
 }

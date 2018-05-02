@@ -205,16 +205,9 @@ namespace CompressionTool
             m_CompressedStream.Insert(0, m_BytePadding);
         }
 
-        private void ProduceFile(string FileName)
+        public LZ77Encoder(int LookAheadBufferSize, int SearchBufferSize, List<byte> InputStream)
         {
-            OutputWriter writer = new OutputWriter();
-
-            writer.WriteToCompressionMetaData(m_CompressedStream, FileName);
-        }
-
-        public LZ77Encoder(int LookAheadBufferSize, int SearchBufferSize)
-        {
-            m_InputStream = new List<byte>();
+            m_InputStream = InputStream;
             m_SearchBuffer = new List<byte>();
             m_LookAheadBuffer = new List<byte>();
             m_CompressedStream = new List<byte>();
@@ -225,15 +218,13 @@ namespace CompressionTool
             m_BytePadding = 0;
         }
 
-        public void Encode(List<byte> InputStream, string FileName)
+        public List<byte> Encode()
         {
-            m_InputStream = InputStream;
-
             PopulateLookAheadBuffer();
 
             LZ77Encode();
 
-            ProduceFile(FileName);
+            return m_CompressedStream;
         }
     }
 }

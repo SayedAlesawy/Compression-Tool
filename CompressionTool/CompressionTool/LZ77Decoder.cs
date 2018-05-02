@@ -20,12 +20,8 @@ namespace CompressionTool
         private int m_SearchBufferMaxSize;
         private string m_TextBuffer;
 
-        private void ReadCompressedFile(string FileName)
+        private void ExtractPadding()
         {
-            InputReader InputReader = new InputReader();
-
-            m_InputStream = InputReader.ReadDecompressionMetaData(FileName);
-
             m_BytePadding = m_InputStream[0];
 
             m_InputStream.RemoveAt(0);
@@ -238,9 +234,10 @@ namespace CompressionTool
             OutputWriter.WriteFinalDecompressedFile(m_DecodedOutput.ToString(), FileName);
         }
 
-        public LZ77Decoder(int SearchBufferMaxSize)
+        public LZ77Decoder(int SearchBufferMaxSize, List<byte> InputStream)
         {
-            m_InputStream = new List<byte>();
+            m_InputStream = InputStream;
+            m_BytePadding = 0;
             m_SearchBuffer = new List<byte>();
             m_OutputStream = new List<byte>();
             m_DecodedOutput = new StringBuilder();
@@ -255,7 +252,7 @@ namespace CompressionTool
         {
             BuildInverseSymbolDictionary();
 
-            ReadCompressedFile(FileName);
+            ExtractPadding();
 
             LZ77Decode();
 

@@ -27,41 +27,35 @@ namespace CompressionTool
         private int m_InputStreamIndex;
         private byte m_InputBytePadding;
         private byte m_OutputBytePadding;
+        private int m_OriginalFileSize;
         private string m_TextBuffer;
-
-        private void LoadMetaData(string FileName)
-        {
-            InputReader InputReader = new InputReader();
-
-            m_InputStream = InputReader.ReadCompressionMetaData(FileName);
-            
-            m_InputBytePadding = m_InputStream[0];
-            
-            m_InputStream.RemoveAt(0);
-        }
-
+       
         private void ConvertOriginalFileToBytes(string FileName)
         {
             TextToByteConverter TextToByteConverter = new TextToByteConverter(FileName);
 
             m_OriginalFile = TextToByteConverter.Convert();
+
+            m_OriginalFileSize = TextToByteConverter.GetOriginalFileSize();
         }
 
-        private void EncodeLZ77(string FileName)
+        private void EncodeLZ77()
         {
-            LZ77Encoder LZ77Encoder = new LZ77Encoder(Constants.LookAheadBufferSize, Constants.SearchBufferSize);
-            LZ77Encoder.Encode(m_OriginalFile, FileName);
+            LZ77Encoder LZ77Encoder = new LZ77Encoder(Constants.LookAheadBufferSize, Constants.SearchBufferSize, m_OriginalFile);
+            m_InputStream = LZ77Encoder.Encode();
         }
 
-        private void ExtractStreams(string FileName)
+        private void ExtractStreams()
         {
-            StreamExtractor StreamExtractor = new StreamExtractor(FileName);
+            StreamExtractor StreamExtractor = new StreamExtractor(m_InputStream);
 
             m_LiteralsStream = StreamExtractor.ExtractLiterals();
 
             m_MatchLengthsStream = StreamExtractor.ExtractMatchLengths();
 
             m_BackwardDistanceStream = StreamExtractor.ExtractBackwardDistances();
+
+            m_InputBytePadding = StreamExtractor.ExtractBytePadding();
         }
 
         private void GetSymbolFrequencies()
@@ -317,27 +311,38 @@ namespace CompressionTool
             m_InputBytePadding = 0;
         }
 
-        public int Deflate(string FileName)
+        public int GetOriginalFileSize()
+        {
+            return m_OriginalFileSize;
+        }
+
+        public int GetCompressedFileSize()
+        {
+            return m_CompressedOutput.Count;
+        }
+
+        public double GetCompressionRatio()
+        {
+            return (double)m_OriginalFileSize / (double)m_CompressedOutput.Count;
+        }
+
+        public void Deflate(string FileName)
         {
             ConvertOriginalFileToBytes(FileName);
 
-            EncodeLZ77(FileName);
+            EncodeLZ77();
 
-            ExtractStreams(FileName);
+            ExtractStreams();
 
             GetSymbolFrequencies();
 
             GetCodeBooksAndHeaders();
-
-            LoadMetaData(FileName);
 
             BuildHeader();
 
             EncodeHuffman();
 
             ProduceFile(FileName);
-
-            return m_CompressedOutput.Count;
         }
     }
 }

@@ -277,16 +277,9 @@ namespace CompressionTool
 
         private int DecodeFinal(string FileName)
         {
-            LZ77Decoder LZ77Decoder = new LZ77Decoder(Constants.SearchBufferSize);
+            LZ77Decoder LZ77Decoder = new LZ77Decoder(Constants.SearchBufferSize, m_OutputStream);
 
             return LZ77Decoder.Decode(FileName);
-        }
-
-        private void ProduceOutputFile(string FileName)
-        {
-            OutputWriter Writer = new OutputWriter();
-
-            Writer.WriteToDecompressionMetaData(m_OutputStream, FileName);
         }
 
         public Inflator()
@@ -314,8 +307,6 @@ namespace CompressionTool
             BuildCodeBooks();
 
             DecodeStream();
-
-            ProduceOutputFile(FileName);
 
             return DecodeFinal(FileName);
         }
