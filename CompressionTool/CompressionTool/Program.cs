@@ -39,8 +39,8 @@ namespace CompressionTool
             TotalFileSize += OriginalFileSize;
             TotalEncodedFileSize += CompressedFileSize;
 
-            Console.WriteLine("Size of file number {0} before compression = {1}", FileNumber, OriginalFileSize);
-            Console.WriteLine("Size of file number {0} after  compression = {1}", FileNumber, CompressedFileSize);
+            Console.WriteLine("Size of file number {0} before compression = {1} bytes", FileNumber, OriginalFileSize);
+            Console.WriteLine("Size of file number {0} after  compression = {1} bytes", FileNumber, CompressedFileSize);
             Console.WriteLine("Compression ratio of file number {0} = {1}", FileNumber, Deflator.GetCompressionRatio());
             Console.WriteLine("Compressed file number {0} in {1} mins", FileNumber, Secs/60.0);
         }

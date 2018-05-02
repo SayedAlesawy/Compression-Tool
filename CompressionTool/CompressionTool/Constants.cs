@@ -14,7 +14,7 @@ namespace CompressionTool
         static public int BackwardDistanceCodewordLength = 19;
         static public int SearchBufferSize = (1 << BackwardDistanceCodewordLength);
         static public int MatchLengthCodewordLength = 8;
-        static public int LookAheadBufferSize = (1 << MatchLengthCodewordLength) + 2;
+        static public int LookAheadBufferSize = (1 << MatchLengthCodewordLength) - 1 + MinMatchLength;
         static public int BufferingSize = 10000;
         static public int CodeUnkown = 0;
         static public int CodeDistance = 1;
