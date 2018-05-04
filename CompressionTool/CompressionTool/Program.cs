@@ -42,7 +42,7 @@ namespace CompressionTool
             Console.WriteLine("Size of file number {0} before compression = {1} bytes", FileNumber, OriginalFileSize);
             Console.WriteLine("Size of file number {0} after  compression = {1} bytes", FileNumber, CompressedFileSize);
             Console.WriteLine("Compression ratio of file number {0} = {1}", FileNumber, Deflator.GetCompressionRatio());
-            Console.WriteLine("Compressed file number {0} in {1} mins", FileNumber, Secs/60.0);
+            Console.WriteLine("Compressed file number {0} in {1} secs", FileNumber, Secs);
         }
 
         static void Decompress(string FileName, int FileNumber)
@@ -71,10 +71,10 @@ namespace CompressionTool
                 Console.WriteLine("Average compression ratio = {0}", (double)TotalFileSize/(double)TotalEncodedFileSize);
 
             if (OperationMode == Encode)
-                Console.WriteLine("Total Compression time = {0} mins", CompressionTotalTime / 60.0);
+                Console.WriteLine("Total Compression time = {0} mins", CompressionTotalTime/60.0);
 
             if (OperationMode == Decode)
-                Console.WriteLine("Total Decompression time = {0} secs", DecompressionTotalTime);
+                Console.WriteLine("Total Decompression time = {0} mins", DecompressionTotalTime/60.0);
 
             Console.WriteLine("Process finished!");
         }
@@ -86,7 +86,7 @@ namespace CompressionTool
             //OperationMode = Encode;
             OperationMode = Decode;
 
-            for (int file = 1; file <= 2; file++)
+            for (int file = 1; file <= 20; file++)
             {
                 string FileName = "DataSet_" + file.ToString();
 

@@ -11,7 +11,7 @@ namespace CompressionTool
     {
         public InputReader()
         {
-
+            //empty
         }
 
         public string ReadOriginalFile(string FileName)
@@ -28,24 +28,6 @@ namespace CompressionTool
             byte[] InputStream = File.ReadAllBytes(FilePath);
 
            return InputStream.ToList<byte>();
-        }
-
-        public List<byte> ReadDecompressionMetaData(string FileName)
-        {
-            string FilePath = @"..\..\DecompressionMetaData\" + FileName + ".tsv";
-
-            byte[] InputStream = File.ReadAllBytes(FilePath);
-
-            return InputStream.ToList<byte>();
-        }
-
-        public List<byte> ReadCompressionMetaData(string FileName)
-        {
-            string FilePath = @"..\..\CompressionMetaData\" + FileName + ".tsv";
-
-            byte[] InputStream = File.ReadAllBytes(FilePath);
-
-            return InputStream.ToList<byte>();
         }
 
         public Dictionary<char, byte> ReadSymbolDictionary()
