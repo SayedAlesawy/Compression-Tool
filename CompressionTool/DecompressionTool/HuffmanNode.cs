@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CompressionTool
+namespace DecompressionTool
 {
     class HuffmanNode : IComparable<HuffmanNode>
     {

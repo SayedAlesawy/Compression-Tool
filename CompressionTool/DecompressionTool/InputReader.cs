@@ -1,9 +1,9 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace CompressionTool
+namespace DecompressionTool
 {
     class InputReader
     {
@@ -12,11 +12,13 @@ namespace CompressionTool
             //empty
         }
 
-        public string ReadOriginalFile(string FileName)
+        public List<byte> ReadFinalEncodedFile(string FileName)
         {
-            string FilePath = @"..\..\Dataset\" + FileName + ".tsv";
+            string FilePath = @"..\..\EncodedOutput\" + FileName + ".tsv";
 
-            return File.ReadAllText(FilePath); 
+            byte[] InputStream = File.ReadAllBytes(FilePath);
+
+           return InputStream.ToList<byte>();
         }
 
         public Dictionary<char, byte> ReadSymbolDictionary()

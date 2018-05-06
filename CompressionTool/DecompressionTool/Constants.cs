@@ -1,4 +1,4 @@
-﻿namespace CompressionTool
+﻿namespace DecompressionTool
 {
     class Constants
     {

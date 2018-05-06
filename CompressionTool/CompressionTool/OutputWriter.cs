@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace CompressionTool
@@ -21,13 +17,6 @@ namespace CompressionTool
             byte[] CompressedData = EncodedStream.ToArray();
 
             File.WriteAllBytes(FilePath, CompressedData);
-        }
-
-        public void WriteFinalDecompressedFile(string Text, string FileName)
-        {
-            string FilePath = @"..\..\DecompressedFiles\" + FileName + ".tsv";
-
-            File.WriteAllText(FilePath, Text, Encoding.UTF8);
         }
     }
 }
