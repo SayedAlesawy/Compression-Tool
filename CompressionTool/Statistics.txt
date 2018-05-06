@@ -1,0 +1,142 @@
+Started compressing file number 1
+Size of file number 1 before compression = 1994794 bytes (15958352 bits)
+Size of file number 1 after  compression = 455454 bytes (3643632 bits)
+Compression ratio of file number 1 = 4.37979247080935
+Compressed file number 1 in 9.743 secs
+
+---------------------------------------------------
+Started compressing file number 2
+Size of file number 2 before compression = 1760617 bytes (14084936 bits)
+Size of file number 2 after  compression = 405691 bytes (3245528 bits)
+Compression ratio of file number 2 = 4.33979802361896
+Compressed file number 2 in 8.397 secs
+
+---------------------------------------------------
+Started compressing file number 3
+Size of file number 3 before compression = 1388866 bytes (11110928 bits)
+Size of file number 3 after  compression = 313976 bytes (2511808 bits)
+Compression ratio of file number 3 = 4.42347822763523
+Compressed file number 3 in 6.517 secs
+
+---------------------------------------------------
+Started compressing file number 4
+Size of file number 4 before compression = 1850299 bytes (14802392 bits)
+Size of file number 4 after  compression = 422622 bytes (3380976 bits)
+Compression ratio of file number 4 = 4.37814169636223
+Compressed file number 4 in 8.784 secs
+
+---------------------------------------------------
+Started compressing file number 5
+Size of file number 5 before compression = 2172789 bytes (17382312 bits)
+Size of file number 5 after  compression = 498801 bytes (3990408 bits)
+Compression ratio of file number 5 = 4.35602374494037
+Compressed file number 5 in 10.535 secs
+
+---------------------------------------------------
+Started compressing file number 6
+Size of file number 6 before compression = 1788278 bytes (14306224 bits)
+Size of file number 6 after  compression = 407526 bytes (3260208 bits)
+Compression ratio of file number 6 = 4.38813229094585
+Compressed file number 6 in 8.429 secs
+
+---------------------------------------------------
+Started compressing file number 7
+Size of file number 7 before compression = 1929533 bytes (15436264 bits)
+Size of file number 7 after  compression = 446784 bytes (3574272 bits)
+Compression ratio of file number 7 = 4.31871553144249
+Compressed file number 7 in 9.269 secs
+
+---------------------------------------------------
+Started compressing file number 8
+Size of file number 8 before compression = 1797407 bytes (14379256 bits)
+Size of file number 8 after  compression = 419674 bytes (3357392 bits)
+Compression ratio of file number 8 = 4.28286479505521
+Compressed file number 8 in 8.584 secs
+
+---------------------------------------------------
+Started compressing file number 9
+Size of file number 9 before compression = 2080781 bytes (16646248 bits)
+Size of file number 9 after  compression = 470933 bytes (3767464 bits)
+Compression ratio of file number 9 = 4.41842257815868
+Compressed file number 9 in 9.983 secs
+
+---------------------------------------------------
+Started compressing file number 10
+Size of file number 10 before compression = 2254209 bytes (18033672 bits)
+Size of file number 10 after  compression = 522861 bytes (4182888 bits)
+Compression ratio of file number 10 = 4.31129688387545
+Compressed file number 10 in 11.245 secs
+
+---------------------------------------------------
+Started compressing file number 11
+Size of file number 11 before compression = 1968717 bytes (15749736 bits)
+Size of file number 11 after  compression = 461242 bytes (3689936 bits)
+Compression ratio of file number 11 = 4.26829516826308
+Compressed file number 11 in 9.601 secs
+
+---------------------------------------------------
+Started compressing file number 12
+Size of file number 12 before compression = 1843053 bytes (14744424 bits)
+Size of file number 12 after  compression = 425740 bytes (3405920 bits)
+Compression ratio of file number 12 = 4.32905764081364
+Compressed file number 12 in 8.873 secs
+
+---------------------------------------------------
+Started compressing file number 13
+Size of file number 13 before compression = 1981237 bytes (15849896 bits)
+Size of file number 13 after  compression = 459831 bytes (3678648 bits)
+Compression ratio of file number 13 = 4.30861990600895
+Compressed file number 13 in 9.587 secs
+
+---------------------------------------------------
+Started compressing file number 14
+Size of file number 14 before compression = 1878901 bytes (15031208 bits)
+Size of file number 14 after  compression = 436262 bytes (3490096 bits)
+Compression ratio of file number 14 = 4.30681792134085
+Compressed file number 14 in 9.017 secs
+
+---------------------------------------------------
+Started compressing file number 15
+Size of file number 15 before compression = 1895110 bytes (15160880 bits)
+Size of file number 15 after  compression = 448916 bytes (3591328 bits)
+Compression ratio of file number 15 = 4.22152473959494
+Compressed file number 15 in 9.326 secs
+
+---------------------------------------------------
+Started compressing file number 16
+Size of file number 16 before compression = 1763894 bytes (14111152 bits)
+Size of file number 16 after  compression = 415565 bytes (3324520 bits)
+Compression ratio of file number 16 = 4.24456823842239
+Compressed file number 16 in 8.934 secs
+
+---------------------------------------------------
+Started compressing file number 17
+Size of file number 17 before compression = 1877425 bytes (15019400 bits)
+Size of file number 17 after  compression = 444187 bytes (3553496 bits)
+Compression ratio of file number 17 = 4.22665453964209
+Compressed file number 17 in 9.222 secs
+
+---------------------------------------------------
+Started compressing file number 18
+Size of file number 18 before compression = 2032303 bytes (16258424 bits)
+Size of file number 18 after  compression = 482055 bytes (3856440 bits)
+Compression ratio of file number 18 = 4.21591519639875
+Compressed file number 18 in 9.977 secs
+
+---------------------------------------------------
+Started compressing file number 19
+Size of file number 19 before compression = 1878031 bytes (15024248 bits)
+Size of file number 19 after  compression = 443356 bytes (3546848 bits)
+Compression ratio of file number 19 = 4.23594357581718
+Compressed file number 19 in 9.161 secs
+
+---------------------------------------------------
+Started compressing file number 20
+Size of file number 20 before compression = 1929659 bytes (15437272 bits)
+Size of file number 20 after  compression = 459663 bytes (3677304 bits)
+Compression ratio of file number 20 = 4.19798635087009
+Compressed file number 20 in 9.508 secs
+
+---------------------------------------------------
+Average compression ratio = 4.30554287179514
+Total Compression time = 3.0782 mins
