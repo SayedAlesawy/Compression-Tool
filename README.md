@@ -62,3 +62,8 @@ probability to avoid precision related errors. The Huffman encoder proceeds by r
 ### The output stream of this phase is 67% smaller than the output of the LZ77 phase and 85% smaller than the original file, achieving an average [compression ratio of ~4.31]. The folder containing the entire dataset (20 files) is reduced from 38,065,903 bytes (38 MB) to 8,841,139 bytes (8.8 MB).
 
 ##### Compressing the entire dataset takes about 4 mins, and the decompression process takes about 9 mins.
+
+# Differences between our scheme and deflate’s
+Our proposed scheme compresses the entire file in one block instead of dividing it into several blocks. After some trials we found out that dividing the files into blocks makes codewords shorter, but the gain achieved is diminished by the repeated headers (One header for each block 692 bytes each).
+- While applying Huffman encoding, we consider literals, lengths, distances as 3 distinct alphabets instead of merging the literals and lengths in one alphabet. After some trials, we figured out that Huffman performs better on data that has natural repetitions (some characters are more frequent than others), such natural repetitions appear in valid linguistic text, but the match-lengths alphabet is quite random, so the introduction of the match-lengths alphabet to the literals alphabet biased the natural repetitions and resulted in codewords of approximately equal lengths, and thus little compression.
+- We eliminated the use of extra bits (selection bits) by separating the stream into 3 different alphabets each taking a full range of values that can be identified without using any selection bits.
