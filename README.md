@@ -31,7 +31,7 @@ The output bit stream is then passed into a bit reduction phase where each group
 
 ##### The output stream of this phase is 70% smaller than the original file, achieving a compression ratio of ~3.0.
 
-# 3- Canonical Huffman encoding
+## 3- Canonical Huffman encoding
 The partially compressed stream obtained from the previous compression layer is then passed into a special class that parses it and extracts 3 streams, namely, the literals stream, the match-length stream, the backward-distance stream and the padding value.
 
 #### Literals stream: 
